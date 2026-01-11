@@ -1,0 +1,100 @@
+# ============================================
+# EngineersTech PHP API - Apache Configuration
+# ============================================
+
+# Enable rewrite engine
+RewriteEngine On
+
+# Set base directory
+RewriteBase /api/
+
+# ============================================
+# Security Headers
+# ============================================
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Prevent clickjacking
+    Header always set X-Frame-Options "DENY"
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove PHP version
+    Header unset X-Powered-By
+</IfModule>
+
+# ============================================
+# PHP Settings (if allowed)
+# ============================================
+<IfModule mod_php.c>
+    php_flag display_errors off
+    php_flag log_errors on
+    php_value max_execution_time 30
+    php_value max_input_time 60
+    php_value memory_limit 128M
+    php_value post_max_size 10M
+    php_value upload_max_filesize 5M
+</IfModule>
+
+# ============================================
+# Protect Sensitive Files
+# ============================================
+<FilesMatch "^\.env|\.htaccess|composer\.(json|lock)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block access to config and includes directories directly
+<FilesMatch "\.(php|phtml)$">
+    # Only allow api/index.php to be accessed directly
+</FilesMatch>
+
+# ============================================
+# URL Rewriting
+# ============================================
+# Redirect all requests to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ api/index.php [QSA,L]
+
+# Handle requests to /api directly
+RewriteRule ^$ api/index.php [QSA,L]
+
+# ============================================
+# Compression
+# ============================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE text/plain
+</IfModule>
+
+# ============================================
+# Caching
+# ============================================
+<IfModule mod_expires.c>
+    ExpiresActive Off
+</IfModule>
+
+# Disable caching for API responses
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</IfModule>
+
+# ============================================
+# Rate Limiting (requires mod_evasive)
+# ============================================
+<IfModule mod_evasive24.c>
+    DOSHashTableSize 3097
+    DOSPageCount 10
+    DOSSiteCount 100
+    DOSPageInterval 1
+    DOSSiteInterval 1
+    DOSBlockingPeriod 60
+</IfModule>
