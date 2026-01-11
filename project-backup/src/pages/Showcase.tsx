@@ -37,7 +37,7 @@ export default function Showcase() {
       }
 
       // Try to find by slug first, then by ID prefix
-      let query = supabase
+      const query = supabase
         .from("demo_projects")
         .select("id, title, description, demo_url, thumbnail, technologies, project_type, slug")
         .eq("status", "published");

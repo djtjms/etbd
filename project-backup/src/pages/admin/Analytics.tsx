@@ -107,9 +107,13 @@ export default function Analytics() {
       // Categorized report: top event types and categories
       const eventTypeCounts: Record<string, number> = {};
       const categoryCounts: Record<string, number> = {};
-      (events || []).forEach((ev: any) => {
+      interface EventWithMetadata {
+        event_type: string;
+        metadata?: { category?: string } | null;
+      }
+      (events || []).forEach((ev: EventWithMetadata) => {
         eventTypeCounts[ev.event_type] = (eventTypeCounts[ev.event_type] || 0) + 1;
-        const cat = ev.metadata?.category || ev.category || "uncategorized";
+        const cat = ev.metadata?.category || "uncategorized";
         categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
       });
 

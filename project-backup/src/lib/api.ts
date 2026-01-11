@@ -2,19 +2,19 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Token management
-const getToken = () => localStorage.getItem('access_token');
-const getRefreshToken = () => localStorage.getItem('refresh_token');
-const setTokens = (access: string, refresh: string) => {
+const getToken = (): string | null => localStorage.getItem('access_token');
+const getRefreshToken = (): string | null => localStorage.getItem('refresh_token');
+const setTokens = (access: string, refresh: string): void => {
   localStorage.setItem('access_token', access);
   localStorage.setItem('refresh_token', refresh);
 };
-const clearTokens = () => {
+const clearTokens = (): void => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
 };
 
 // Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data: T;
@@ -102,21 +102,21 @@ async function refreshToken(): Promise<boolean> {
 
 // API client
 export const api = {
-  get: <T>(endpoint: string) => apiRequest<T>(endpoint),
+  get: <T>(endpoint: string): Promise<ApiResponse<T>> => apiRequest<T>(endpoint),
   
-  post: <T>(endpoint: string, data: any) => 
+  post: <T>(endpoint: string, data: Record<string, unknown>): Promise<ApiResponse<T>> => 
     apiRequest<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
     }),
   
-  put: <T>(endpoint: string, data: any) => 
+  put: <T>(endpoint: string, data: Record<string, unknown>): Promise<ApiResponse<T>> => 
     apiRequest<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
   
-  delete: <T>(endpoint: string) => 
+  delete: <T>(endpoint: string): Promise<ApiResponse<T>> => 
     apiRequest<T>(endpoint, { method: 'DELETE' }),
     
   upload: async (file: File): Promise<ApiResponse<{ url: string }>> => {
@@ -134,14 +134,24 @@ export const api = {
   },
 };
 
+// User type for auth responses
+interface AuthUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: string;
+}
+
+interface AuthResponse {
+  user: AuthUser;
+  access_token: string;
+  refresh_token: string;
+}
+
 // Auth helpers
 export const auth = {
-  login: async (email: string, password: string) => {
-    const response = await api.post<{
-      user: any;
-      access_token: string;
-      refresh_token: string;
-    }>('/auth/login', { email, password });
+  login: async (email: string, password: string): Promise<ApiResponse<AuthResponse>> => {
+    const response = await api.post<AuthResponse>('/auth/login', { email, password });
     
     if (response.success) {
       setTokens(response.data.access_token, response.data.refresh_token);
@@ -149,12 +159,8 @@ export const auth = {
     return response;
   },
   
-  register: async (email: string, password: string, fullName?: string) => {
-    const response = await api.post<{
-      user: any;
-      access_token: string;
-      refresh_token: string;
-    }>('/auth/register', {
+  register: async (email: string, password: string, fullName?: string): Promise<ApiResponse<AuthResponse>> => {
+    const response = await api.post<AuthResponse>('/auth/register', {
       email,
       password,
       password_confirmation: password,
@@ -167,14 +173,14 @@ export const auth = {
     return response;
   },
   
-  logout: async () => {
+  logout: async (): Promise<void> => {
     await api.post('/auth/logout', {});
     clearTokens();
   },
   
-  getUser: () => api.get<any>('/auth/me'),
+  getUser: (): Promise<ApiResponse<AuthUser>> => api.get<AuthUser>('/auth/me'),
   
-  isAuthenticated: () => !!getToken(),
+  isAuthenticated: (): boolean => !!getToken(),
 };
 
 export default api;
