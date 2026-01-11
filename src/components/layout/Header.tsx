@@ -43,8 +43,8 @@ export function Header() {
     <header 
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled 
-          ? "glass border-b border-border/50 shadow-lg" 
+        scrolled || isOpen
+          ? "bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg" 
           : "bg-transparent"
       )}
     >
@@ -131,7 +131,7 @@ export function Header() {
             isOpen ? "max-h-[calc(100vh-4rem)] opacity-100" : "max-h-0 opacity-0"
           )}
         >
-          <nav className="py-4 border-t border-border/50">
+          <nav className="py-4 border-t border-border/50 bg-background/95 backdrop-blur-xl">
             <div className="flex flex-col gap-1">
               {navLinks.map((link, index) => (
                 <Link
