@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Code2, Brain, Settings, Zap, Shield, Rocket } from "lucide-react";
+import { ArrowRight, Sparkles, Code2, Brain, Settings, Zap, Shield, Rocket, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile, usePrefersReducedMotion } from "@/hooks/useIsMobile";
 
@@ -72,18 +72,18 @@ function AnimatedCounter({ value, suffix, disabled }: { value: number; suffix: s
   );
 }
 
-// Simple grid pattern without blur (mobile-safe)
+// Premium grid pattern
 function GridPattern({ reduced }: { reduced?: boolean }) {
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${reduced ? 'opacity-10' : 'opacity-20'}`}>
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${reduced ? 'opacity-5' : 'opacity-10'}`}>
       <div 
         className="absolute inset-0"
         style={{
           backgroundImage: `
-            linear-gradient(to right, hsl(var(--primary) / 0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, hsl(var(--primary) / 0.1) 1px, transparent 1px)
+            linear-gradient(to right, hsl(var(--primary) / 0.15) 1px, transparent 1px),
+            linear-gradient(to bottom, hsl(var(--primary) / 0.15) 1px, transparent 1px)
           `,
-          backgroundSize: '60px 60px',
+          backgroundSize: '80px 80px',
         }}
       />
     </div>
@@ -96,7 +96,7 @@ function FloatingOrb({ className, delay = 0, disabled }: { className?: string; d
   
   return (
     <div 
-      className={`absolute rounded-full blur-3xl animate-float opacity-30 ${className}`}
+      className={`absolute rounded-full blur-3xl animate-float opacity-20 ${className}`}
       style={{ animationDelay: `${delay}s` }}
     />
   );
@@ -110,7 +110,7 @@ export function HeroSection() {
 
   // Throttled mouse move handler (desktop only)
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (rafRef.current) return; // Skip if already scheduled
+    if (rafRef.current) return;
     
     rafRef.current = requestAnimationFrame(() => {
       setMousePosition({
@@ -122,7 +122,6 @@ export function HeroSection() {
   }, []);
 
   useEffect(() => {
-    // Disable mouse tracking on mobile or reduced motion
     if (isMobile || prefersReducedMotion) return;
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -134,20 +133,22 @@ export function HeroSection() {
     };
   }, [handleMouseMove, isMobile, prefersReducedMotion]);
 
-  // Use simplified effects on mobile or reduced motion
   const useSimplifiedEffects = isMobile || prefersReducedMotion;
 
   return (
     <section className="relative min-h-[calc(100vh-4rem)] sm:min-h-screen flex items-center overflow-hidden">
       {/* Dynamic Background */}
-      <div className="absolute inset-0 bg-background" />
+      <div className="absolute inset-0 bg-gradient-hero" />
+      
+      {/* Mesh gradient background */}
+      <div className="absolute inset-0 bg-gradient-mesh opacity-60" />
       
       {/* Animated gradient that follows mouse (desktop only) */}
       {!useSimplifiedEffects && (
         <div 
-          className="absolute inset-0 opacity-40 transition-all duration-1000 ease-out"
+          className="absolute inset-0 opacity-50 transition-all duration-1000 ease-out"
           style={{
-            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, hsl(var(--primary) / 0.15) 0%, transparent 50%)`,
+            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, hsl(var(--primary) / 0.12) 0%, transparent 45%)`,
           }}
         />
       )}
@@ -155,9 +156,9 @@ export function HeroSection() {
       {/* Static gradient for mobile */}
       {useSimplifiedEffects && (
         <div 
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-40"
           style={{
-            background: `radial-gradient(circle at 50% 30%, hsl(var(--primary) / 0.15) 0%, transparent 60%)`,
+            background: `radial-gradient(circle at 50% 30%, hsl(var(--primary) / 0.1) 0%, transparent 50%)`,
           }}
         />
       )}
@@ -165,51 +166,53 @@ export function HeroSection() {
       {/* Grid pattern */}
       <GridPattern reduced={useSimplifiedEffects} />
       
-      {/* Floating orbs (desktop only - these use blur which causes mobile GPU issues) */}
+      {/* Floating orbs */}
       <FloatingOrb 
-        className="w-[500px] h-[500px] bg-primary/20 top-0 -left-40" 
+        className="w-[600px] h-[600px] bg-primary/30 -top-40 -left-40" 
         delay={0} 
         disabled={useSimplifiedEffects} 
       />
       <FloatingOrb 
-        className="w-[400px] h-[400px] bg-accent/20 bottom-0 -right-32" 
+        className="w-[500px] h-[500px] bg-accent/25 -bottom-20 -right-32" 
         delay={2} 
         disabled={useSimplifiedEffects} 
       />
       <FloatingOrb 
-        className="w-[300px] h-[300px] bg-primary/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
+        className="w-[350px] h-[350px] bg-primary/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
         delay={1} 
         disabled={useSimplifiedEffects} 
       />
       
-      {/* Gradient line at bottom */}
+      {/* Gradient lines */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      <div className="absolute top-1/4 left-0 w-px h-1/2 bg-gradient-to-b from-transparent via-primary/20 to-transparent hidden lg:block" />
+      <div className="absolute top-1/4 right-0 w-px h-1/2 bg-gradient-to-b from-transparent via-primary/20 to-transparent hidden lg:block" />
       
-      {/* Animated particles (desktop only, reduced count) */}
+      {/* Animated particles (desktop only) */}
       {!useSimplifiedEffects && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(6)].map((_, i) => (
             <div 
               key={i}
-              className="absolute w-1 h-1 bg-primary/40 rounded-full animate-float"
+              className="absolute w-1.5 h-1.5 bg-primary/50 rounded-full animate-float"
               style={{ 
-                left: `${20 + i * 20}%`,
-                top: `${25 + (i % 2) * 30}%`,
-                animationDelay: `${i * 0.7}s`,
-                animationDuration: `${5 + i}s`
+                left: `${15 + i * 15}%`,
+                top: `${20 + (i % 3) * 25}%`,
+                animationDelay: `${i * 0.6}s`,
+                animationDuration: `${6 + i * 0.5}s`
               }} 
             />
           ))}
         </div>
       )}
 
-      <div className="container mx-auto px-4 relative z-10 py-12 sm:py-20">
+      <div className="container mx-auto px-4 relative z-10 py-16 sm:py-24">
         <div className="max-w-5xl mx-auto">
           {/* Badge */}
-          <div className="flex justify-center mb-8 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm group hover:border-primary/40 transition-all duration-300 cursor-default">
+          <div className="flex justify-center mb-10 animate-fade-in">
+            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/25 backdrop-blur-sm group hover:border-primary/40 hover:bg-primary/15 transition-all duration-300 cursor-default">
               <Sparkles className="w-4 h-4 text-primary animate-pulse-slow" />
-              <span className="text-sm text-foreground/80 font-medium">
+              <span className="text-sm text-foreground/90 font-medium">
                 Innovating Tomorrow, Today
               </span>
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -218,20 +221,20 @@ export function HeroSection() {
 
           {/* Main Heading */}
           <h1 
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-center mb-6 animate-fade-in leading-[1.1] tracking-tight"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-center mb-8 animate-fade-in leading-[1.05] tracking-tight"
             style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.1s" }}
           >
             <span className="block text-foreground">Transform Your</span>
-            <span className="block mt-2">
+            <span className="block mt-2 sm:mt-3">
               <span className="text-gradient">Business</span>
               <span className="text-foreground"> with</span>
             </span>
-            <span className="block text-foreground mt-2">Cutting-Edge Tech</span>
+            <span className="block text-foreground mt-2 sm:mt-3">Cutting-Edge Tech</span>
           </h1>
 
           {/* Subheading */}
           <p 
-            className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center mb-10 max-w-3xl mx-auto animate-fade-in leading-relaxed"
+            className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center mb-12 max-w-3xl mx-auto animate-fade-in leading-relaxed"
             style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.2s" }}
           >
             We deliver innovative software solutions, AI-powered systems, and expert IT consulting to help businesses thrive in the digital age.
@@ -245,11 +248,11 @@ export function HeroSection() {
             <Link to="/contact" className="w-full sm:w-auto">
               <Button 
                 variant="gradient" 
-                size="lg" 
-                className="gap-2 shadow-primary w-full sm:w-auto text-base px-8 py-6 group relative overflow-hidden"
+                size="xl" 
+                className="gap-2.5 w-full sm:w-auto group relative overflow-hidden btn-glow"
               >
-                <span className="relative z-10 flex items-center gap-2">
-                  <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span className="relative z-10 flex items-center gap-2.5">
+                  <Rocket className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                   Start Your Project
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
@@ -258,10 +261,10 @@ export function HeroSection() {
             <Link to="/demo" className="w-full sm:w-auto">
               <Button 
                 variant="outline" 
-                size="lg" 
-                className="gap-2 w-full sm:w-auto text-base px-8 py-6 border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 group"
+                size="xl" 
+                className="gap-2.5 w-full sm:w-auto group"
               >
-                <Shield className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                <Play className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                 View Live Demos
               </Button>
             </Link>
@@ -269,22 +272,22 @@ export function HeroSection() {
 
           {/* Stats Section */}
           <div 
-            className="grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto mb-12 animate-fade-in"
+            className="grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto mb-14 animate-fade-in"
             style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.4s" }}
           >
             {stats.map((stat, index) => (
               <div 
                 key={index}
-                className="text-center p-4 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/30 transition-colors"
+                className="text-center p-4 sm:p-6 rounded-2xl bg-card/60 border border-border/50 backdrop-blur-sm hover:border-primary/40 hover:bg-card/80 transition-all duration-300 group"
               >
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 group-hover:scale-105 transition-transform">
                   <AnimatedCounter 
                     value={stat.value} 
                     suffix={stat.suffix} 
                     disabled={prefersReducedMotion}
                   />
                 </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -297,10 +300,10 @@ export function HeroSection() {
             {serviceTags.map((tag, index) => (
               <div 
                 key={index} 
-                className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/50 border border-border/50 backdrop-blur-sm hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 cursor-default"
+                className="group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-secondary/60 border border-border/50 backdrop-blur-sm hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 cursor-default"
               >
                 <tag.icon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-                <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors">{tag.label}</span>
+                <span className="text-sm text-foreground/80 group-hover:text-foreground font-medium transition-colors">{tag.label}</span>
               </div>
             ))}
           </div>
@@ -309,8 +312,9 @@ export function HeroSection() {
 
       {/* Scroll indicator (desktop only) */}
       {!useSimplifiedEffects && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
-          <div className="w-6 h-10 rounded-full border-2 border-primary/30 flex items-start justify-center p-2">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce hidden sm:flex flex-col items-center gap-2">
+          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Scroll</span>
+          <div className="w-6 h-10 rounded-full border-2 border-primary/40 flex items-start justify-center p-2">
             <div className="w-1 h-2 bg-primary rounded-full animate-pulse" />
           </div>
         </div>
