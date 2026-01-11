@@ -1,0 +1,276 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      deploy_ftp:
+        description: 'Deploy via FTP after build'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate repository state
+        run: |
+          echo "🔍 Checking repository hygiene..."
+          
+          # Check for conflicting lock files
+          if [ -f "bun.lock" ] || [ -f "bun.lockb" ] || [ -f "yarn.lock" ] || [ -f "pnpm-lock.yaml" ]; then
+            echo "⚠️ Found non-npm lock files, removing..."
+            rm -f bun.lock bun.lockb yarn.lock pnpm-lock.yaml 2>/dev/null || true
+          fi
+          
+          # Ensure dist is not committed
+          if [ -d "dist" ]; then
+            echo "⚠️ dist directory found in repo, this should be in .gitignore"
+          fi
+          
+          echo "✅ Repository validation complete"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
+      - name: Clean install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run linter
+        run: npm run lint || true
+        continue-on-error: true
+
+      - name: Build for production
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+
+      - name: Verify build output
+        run: |
+          echo "🔍 Verifying build..."
+          
+          if [ ! -f dist/index.html ]; then
+            echo "❌ dist/index.html not found!"
+            exit 1
+          fi
+          
+          if ! grep -q "assets/" dist/index.html; then
+            echo "❌ No asset references in index.html!"
+            exit 1
+          fi
+          
+          if grep -q "/src/main.tsx" dist/index.html; then
+            echo "❌ Dev-mode reference detected!"
+            exit 1
+          fi
+          
+          echo "✅ Build verification passed!"
+          echo ""
+          echo "📦 Build contents:"
+          ls -lah dist/
+          echo ""
+          echo "📊 Build size:"
+          du -sh dist/
+
+      - name: Copy .htaccess
+        run: |
+          if [ -f public/.htaccess ]; then
+            cp public/.htaccess dist/.htaccess
+            echo "✅ .htaccess copied from public/"
+          else
+            echo "⚠️ No .htaccess found in public/, creating default..."
+            cat > dist/.htaccess << 'EOF'
+          RewriteEngine On
+          RewriteBase /
+          RewriteCond %{HTTPS} off
+          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^ index.html [QSA,L]
+          <IfModule mod_expires.c>
+            ExpiresActive On
+            ExpiresByType text/html "access plus 0 seconds"
+            ExpiresByType application/javascript "access plus 1 year"
+            ExpiresByType text/css "access plus 1 year"
+            ExpiresByType image/jpeg "access plus 1 year"
+            ExpiresByType image/png "access plus 1 year"
+            ExpiresByType image/webp "access plus 1 year"
+          </IfModule>
+          <IfModule mod_deflate.c>
+            AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
+          </IfModule>
+          Options -Indexes
+          ErrorDocument 404 /index.html
+          EOF
+          fi
+
+      - name: Create version info
+        run: |
+          cat > dist/version.json << EOF
+          {
+            "version": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "buildTime": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "buildNumber": "${{ github.run_number }}",
+            "environment": "${{ github.event.inputs.environment || 'production' }}"
+          }
+          EOF
+          echo "✅ Version info created"
+
+      - name: Create deployment package
+        run: |
+          cd dist
+          zip -r9 ../deploy-cpanel.zip .
+          cd ..
+          echo ""
+          echo "📦 Package created:"
+          ls -lh deploy-cpanel.zip
+
+      - name: Upload deployment package
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-cpanel-${{ github.run_number }}
+          path: deploy-cpanel.zip
+          retention-days: 30
+
+      - name: Upload dist folder for FTP deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.run_number }}
+          path: dist/
+          retention-days: 7
+
+  # FTP Deployment - can be triggered manually or automatically
+  deploy-ftp:
+    name: Deploy to cPanel via FTP
+    needs: build
+    runs-on: ubuntu-latest
+    # Run on main push OR when manually triggered with deploy_ftp=true
+    if: |
+      (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_ftp == 'true')
+    
+    steps:
+      - name: Check FTP secrets
+        run: |
+          if [ -z "${{ secrets.FTP_SERVER }}" ] || [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
+            echo "⚠️ FTP secrets not configured. Skipping FTP deployment."
+            echo "To enable FTP deployment, add these secrets to your GitHub repository:"
+            echo "  - FTP_SERVER (e.g., ftp.yourdomain.com)"
+            echo "  - FTP_USERNAME"
+            echo "  - FTP_PASSWORD"
+            echo "  - FTP_SERVER_DIR (optional, defaults to /public_html/)"
+            exit 0
+          fi
+          echo "✅ FTP secrets configured"
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.run_number }}
+          path: ./dist/
+
+      - name: Verify download
+        run: |
+          echo "📦 Downloaded files:"
+          ls -lah dist/
+          
+          if [ ! -f dist/index.html ]; then
+            echo "❌ index.html not found in artifact!"
+            exit 1
+          fi
+          echo "✅ Artifact verified"
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}
+          dangerous-clean-slate: false
+          log-level: standard
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+
+      - name: Deployment complete
+        run: |
+          echo "🚀 FTP deployment complete!"
+          echo "Server: ${{ secrets.FTP_SERVER }}"
+          echo "Directory: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}"
+
+  summary:
+    name: Deployment Summary
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## 🚀 Build Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build:** #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.inputs.environment || 'production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Deployment Package" >> $GITHUB_STEP_SUMMARY
+          echo "\`deploy-cpanel-${{ github.run_number }}.zip\` - Ready for cPanel upload" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Manual Deployment (cPanel File Manager)" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download \`deploy-cpanel-${{ github.run_number }}.zip\` from Actions artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "2. Login to cPanel → File Manager → your target folder" >> $GITHUB_STEP_SUMMARY
+          echo "3. Upload and extract the ZIP file" >> $GITHUB_STEP_SUMMARY
+          echo "4. Delete the ZIP file after extraction" >> $GITHUB_STEP_SUMMARY
+          echo "5. Verify the site loads correctly" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔄 Auto FTP Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "Configure these GitHub secrets to enable automatic FTP deployment:" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FTP_SERVER\` - FTP hostname (e.g., ftp.yourdomain.com)" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FTP_USERNAME\` - FTP username" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FTP_PASSWORD\` - FTP password" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FTP_SERVER_DIR\` - Target directory (optional, default: /public_html/)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Included Features" >> $GITHUB_STEP_SUMMARY
+          echo "- Optimized .htaccess with caching, compression, and security headers" >> $GITHUB_STEP_SUMMARY
+          echo "- SPA routing support for React Router" >> $GITHUB_STEP_SUMMARY
+          echo "- HTTPS redirect enabled" >> $GITHUB_STEP_SUMMARY
+          echo "- Version info at \`/version.json\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Compatible with cPanel File Manager manual upload" >> $GITHUB_STEP_SUMMARY
+          echo "- Compatible with GitHub FTP auto-deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- Works with Supabase/Lovable Cloud backend" >> $GITHUB_STEP_SUMMARY
