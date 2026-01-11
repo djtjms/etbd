@@ -1,0 +1,117 @@
+name: Build Deployment Package
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'project-backup/**'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'project-backup/**'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: project-backup
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: project-backup/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Prepare deployment package
+        run: |
+          # Create build directory
+          mkdir -p build
+          
+          # Copy built frontend
+          cp -r dist/* build/
+          
+          # Copy API
+          mkdir -p build/api
+          cp -r api/* build/api/
+          
+          # Copy migrations
+          mkdir -p build/database
+          cp -r migrations/* build/database/
+          
+          # Create uploads directory
+          mkdir -p build/api/uploads
+          touch build/api/uploads/.gitkeep
+          
+          # Create .htaccess for SPA routing
+          cat > build/.htaccess << 'EOF'
+          RewriteEngine On
+          RewriteBase /
+          
+          # Don't rewrite API requests
+          RewriteRule ^api/ - [L]
+          
+          # Serve existing files directly
+          RewriteCond %{REQUEST_FILENAME} -f [OR]
+          RewriteCond %{REQUEST_FILENAME} -d
+          RewriteRule ^ - [L]
+          
+          # SPA fallback
+          RewriteRule ^ index.html [L]
+          EOF
+          
+          # Create setup instructions
+          cat > build/SETUP.txt << 'EOF'
+          EngineersTech Deployment Instructions
+          =====================================
+          
+          1. Extract all files to your web server's public directory
+          2. Create a MySQL database
+          3. Import database/001_create_all_tables.sql
+          4. Import database/002_seed_data.sql
+          5. Rename api/.env.example to api/.env
+          6. Update database credentials in api/.env
+          7. Set permissions: chmod 755 api/uploads
+          
+          Default Admin Login:
+          - Email: admin@engineerstechbd.com
+          - Password: Admin@123456
+          
+          IMPORTANT: Change the password immediately after first login!
+          EOF
+
+      - name: Create ZIP archive
+        run: |
+          cd build
+          zip -r ../engineerstech-deploy.zip ./*
+          cd ..
+          ls -la engineerstech-deploy.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: engineerstech-deploy
+          path: project-backup/engineerstech-deploy.zip
+          retention-days: 30
+
+      - name: Create Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: project-backup/engineerstech-deploy.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
