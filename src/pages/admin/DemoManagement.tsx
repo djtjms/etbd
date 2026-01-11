@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Edit, Trash2, ExternalLink, Eye, EyeOff, Upload, Search, Key, Copy, Check } from "lucide-react";
+import { Plus, Edit, Trash2, ExternalLink, Eye, EyeOff, Upload, Search, Key, Copy, Check, Images, Play } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { GalleryUpload } from "@/components/admin/GalleryUpload";
+import { LivePreview } from "@/components/portfolio/LivePreview";
 
 interface DemoProject {
   id: string;
@@ -29,6 +31,7 @@ interface DemoProject {
   project_type: string;
   demo_url: string | null;
   thumbnail: string | null;
+  screenshots: string[] | null;
   technologies: string[] | null;
   is_featured: boolean;
   status: string;
@@ -50,6 +53,7 @@ const defaultFormData = {
   project_type: "website",
   demo_url: "",
   thumbnail: "",
+  screenshots: [] as string[],
   technologies: "",
   is_featured: false,
   status: "draft",
@@ -81,7 +85,7 @@ export default function DemoManagement() {
   const fetchProjects = async () => {
     const { data, error } = await supabase
       .from("demo_projects")
-      .select("id, title, description, project_type, demo_url, thumbnail, technologies, is_featured, status, slug, created_at")
+      .select("id, title, description, project_type, demo_url, thumbnail, screenshots, technologies, is_featured, status, slug, created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -133,6 +137,7 @@ export default function DemoManagement() {
       project_type: formData.project_type,
       demo_url: formData.demo_url || null,
       thumbnail: formData.thumbnail || null,
+      screenshots: formData.screenshots.length > 0 ? formData.screenshots : null,
       technologies: formData.technologies ? formData.technologies.split(",").map(t => t.trim()).filter(Boolean) : [],
       is_featured: formData.is_featured,
       status: formData.status,
@@ -195,6 +200,7 @@ export default function DemoManagement() {
       project_type: project.project_type,
       demo_url: project.demo_url || "",
       thumbnail: project.thumbnail || "",
+      screenshots: project.screenshots || [],
       technologies: project.technologies?.join(", ") || "",
       is_featured: project.is_featured,
       status: project.status,
@@ -497,6 +503,40 @@ My Project,https://example.com,website,"React, Node.js",admin,demo123`}
                       folder="demo-projects"
                     />
                   </div>
+
+                  {/* Screenshots Gallery */}
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Images size={18} className="text-primary" />
+                      <h4 className="font-semibold text-foreground">Project Screenshots</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Upload multiple screenshots. Drag to reorder. First image becomes the hero.
+                    </p>
+                    <GalleryUpload
+                      value={formData.screenshots}
+                      onChange={(urls) => setFormData({ ...formData, screenshots: urls })}
+                      folder="demo-screenshots"
+                      maxImages={10}
+                    />
+                  </div>
+
+                  {/* Live Preview */}
+                  {formData.demo_url && (
+                    <div className="border-t border-border pt-4 mt-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Play size={18} className="text-primary" />
+                        <h4 className="font-semibold text-foreground">Live Preview</h4>
+                      </div>
+                      <LivePreview
+                        url={formData.demo_url}
+                        title={formData.title || "Demo Preview"}
+                        thumbnail={formData.thumbnail || undefined}
+                        allowInteraction={false}
+                        onExpand={() => window.open(formData.demo_url, "_blank")}
+                      />
+                    </div>
+                  )}
 
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Technologies (comma separated)</label>
