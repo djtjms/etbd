@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { 
   Building2, 
   Code2, 
@@ -17,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useBranding } from "@/hooks/useBranding";
 import { supabase } from "@/integrations/supabase/client";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/animations";
 
 // Import service images
 import aiAutomation from "@/assets/services/ai-automation.png";
@@ -160,7 +162,7 @@ export function ServicesSection() {
       
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-20">
+        <ScrollReveal className="text-center max-w-2xl mx-auto mb-20">
           <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold tracking-wider uppercase mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Our Services
@@ -172,19 +174,20 @@ export function ServicesSection() {
             Comprehensive technology solutions designed to accelerate your business growth 
             and digital transformation.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto" staggerDelay={0.15}>
           {services.map((service, index) => (
-            <div
-              key={service.id}
-              className={cn(
-                "group relative bg-gradient-card rounded-3xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/50 hover-lift",
-                expandedService === service.id && "border-primary/50 ring-1 ring-primary/20"
-              )}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
+            <StaggerItem key={service.id}>
+              <motion.div
+                className={cn(
+                  "group relative bg-gradient-card rounded-3xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/50",
+                  expandedService === service.id && "border-primary/50 ring-1 ring-primary/20"
+                )}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
               {/* Service Image */}
               <div className="relative aspect-[16/10] overflow-hidden cursor-pointer" onClick={() => handleServiceClick(service)}>
                 <img 
@@ -255,19 +258,20 @@ export function ServicesSection() {
                   </div>
                 </div>
               </div>
-            </div>
+              </motion.div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* CTA */}
-        <div className="text-center mt-16">
+        <ScrollReveal delay={0.3} className="text-center mt-16">
           <Link to="/services">
             <Button variant="outline" size="lg" className="gap-2.5 group">
               View All Services
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

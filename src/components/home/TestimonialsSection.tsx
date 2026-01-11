@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Star, Quote } from "lucide-react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/animations";
 
 interface Testimonial {
   id: string;
@@ -101,7 +103,7 @@ export function TestimonialsSection() {
       
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-20">
+        <ScrollReveal className="text-center max-w-2xl mx-auto mb-20">
           <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold tracking-wider uppercase mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Testimonials
@@ -113,16 +115,17 @@ export function TestimonialsSection() {
             Don't just take our word for it. Here's what our clients have to say 
             about working with us.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto" staggerDelay={0.15}>
           {testimonials.map((testimonial, index) => (
-            <div
-              key={testimonial.id}
-              className="relative bg-gradient-card rounded-3xl border border-border/50 p-8 lg:p-10 hover:border-primary/50 hover-lift transition-all duration-500 animate-fade-in group"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
+            <StaggerItem key={testimonial.id}>
+              <motion.div
+                className="relative bg-gradient-card rounded-3xl border border-border/50 p-8 lg:p-10 hover:border-primary/50 transition-all duration-500 group h-full"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
               {/* Quote Icon */}
               <div className="absolute top-8 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Quote size={56} className="text-primary" />
@@ -174,9 +177,10 @@ export function TestimonialsSection() {
                   </p>
                 </div>
               </div>
-            </div>
+              </motion.div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   );
