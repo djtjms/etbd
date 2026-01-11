@@ -51,11 +51,9 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function AnimatedRoutes() {
-  const location = useLocation();
-
   return (
-    <PageTransition key={location.pathname}>
-      <Routes location={location}>
+    <PageTransition>
+      <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Index />} />
         <Route path="/services" element={<Services />} />
