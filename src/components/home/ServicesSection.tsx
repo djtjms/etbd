@@ -153,45 +153,49 @@ export function ServicesSection() {
   };
 
   return (
-    <section id="services" className="py-20 md:py-32 bg-background relative">
-      <div className="absolute inset-0 bg-gradient-glow opacity-30" />
+    <section id="services" className="py-24 md:py-36 bg-background relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-gradient-mesh opacity-40" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-primary text-sm font-medium tracking-wider uppercase mb-4 block">
+        <div className="text-center max-w-2xl mx-auto mb-20">
+          <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold tracking-wider uppercase mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Our Services
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
             What We <span className="text-gradient">Offer</span>
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
             Comprehensive technology solutions designed to accelerate your business growth 
             and digital transformation.
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
           {services.map((service, index) => (
             <div
               key={service.id}
               className={cn(
-                "group relative bg-gradient-card rounded-2xl border border-border/50 overflow-hidden transition-all duration-300 hover:border-primary/50",
-                expandedService === service.id && "border-primary/50"
+                "group relative bg-gradient-card rounded-3xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/50 hover-lift",
+                expandedService === service.id && "border-primary/50 ring-1 ring-primary/20"
               )}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Service Image */}
-              <div className="relative aspect-video overflow-hidden cursor-pointer" onClick={() => handleServiceClick(service)}>
+              <div className="relative aspect-[16/10] overflow-hidden cursor-pointer" onClick={() => handleServiceClick(service)}>
                 <img 
                   src={service.image} 
                   alt={service.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                <div className="absolute bottom-3 right-3">
-                  <Button variant="gradient" size="sm" className="gap-1.5 text-xs">
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                <div className="absolute bottom-4 right-4">
+                  <Button variant="gradient" size="sm" className="gap-2 text-xs shadow-primary-lg">
                     <MessageCircle size={14} />
                     Chat Now
                   </Button>
@@ -201,60 +205,66 @@ export function ServicesSection() {
               {/* Service Header */}
               <button
                 onClick={() => toggleService(service.id)}
-                className="w-full p-6 text-left flex items-start gap-4"
+                className="w-full p-6 lg:p-8 text-left flex items-start gap-5"
               >
-                <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0">
+                <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shrink-0 shadow-primary group-hover:shadow-primary-lg transition-all">
                   <service.icon size={28} className="text-primary-foreground" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-xl lg:text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
                     {service.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-sm lg:text-base leading-relaxed">
                     {service.description}
                   </p>
                 </div>
-                <div className="shrink-0 mt-1">
-                  {expandedService === service.id ? (
-                    <ChevronUp size={24} className="text-primary" />
-                  ) : (
-                    <ChevronDown size={24} className="text-muted-foreground group-hover:text-primary transition-colors" />
-                  )}
+                <div className="shrink-0 mt-2">
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+                    expandedService === service.id 
+                      ? "bg-primary text-primary-foreground rotate-180" 
+                      : "bg-secondary text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
+                  )}>
+                    <ChevronDown size={18} />
+                  </div>
                 </div>
               </button>
 
               {/* Expanded Content */}
-              {expandedService === service.id && (
-                <div className="px-6 pb-6 animate-fade-in">
-                  <div className="border-t border-border/50 pt-6 space-y-4">
+              <div className={cn(
+                "overflow-hidden transition-all duration-500",
+                expandedService === service.id ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+              )}>
+                <div className="px-6 lg:px-8 pb-6 lg:pb-8">
+                  <div className="border-t border-border/50 pt-6 space-y-3">
                     {service.expandedContent.features.map((feature, idx) => (
                       <div 
                         key={idx} 
-                        className="flex items-start gap-3 cursor-pointer hover:bg-secondary/50 p-2 rounded-lg transition-colors"
+                        className="flex items-start gap-4 cursor-pointer hover:bg-primary/5 p-3 rounded-xl transition-all duration-200"
                         onClick={() => handleServiceClick(service)}
                       >
-                        <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                        <div className="w-11 h-11 rounded-xl bg-secondary/80 flex items-center justify-center shrink-0 border border-border/50">
                           <feature.icon size={20} className="text-primary" />
                         </div>
                         <div>
-                          <h4 className="text-foreground font-medium">{feature.title}</h4>
-                          <p className="text-muted-foreground text-sm">{feature.description}</p>
+                          <h4 className="text-foreground font-semibold mb-0.5">{feature.title}</h4>
+                          <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-16">
           <Link to="/services">
-            <Button variant="outline" size="lg" className="gap-2">
+            <Button variant="outline" size="lg" className="gap-2.5 group">
               View All Services
-              <ArrowRight size={18} />
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
         </div>

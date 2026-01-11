@@ -124,61 +124,64 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-32 bg-background relative">
-      <div className="absolute inset-0 bg-gradient-glow opacity-30" />
+    <section id="contact" className="py-24 md:py-36 bg-background relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-gradient-mesh opacity-40" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-primary text-sm font-medium tracking-wider uppercase mb-4 block">
+        <div className="text-center max-w-2xl mx-auto mb-20">
+          <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold tracking-wider uppercase mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Get in Touch
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
             Let's Build <span className="text-gradient">Something Great</span>
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
             Ready to transform your business with cutting-edge technology? 
             Get in touch and let's discuss your project.
           </p>
         </div>
 
         {/* Contact Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto mb-16">
           {contactCards.map((card, index) => (
             <a
               key={index}
               href={card.href}
               target={card.href.startsWith("http") ? "_blank" : undefined}
               rel="noopener noreferrer"
-              className="group relative bg-gradient-card rounded-2xl border border-border/50 p-6 text-center hover:border-primary/50 transition-all duration-300 animate-fade-in"
+              className="group relative bg-gradient-card rounded-2xl border border-border/50 p-7 text-center hover:border-primary/50 hover-lift transition-all duration-500 animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
+              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mx-auto mb-5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
                 <card.icon size={28} className="text-white" />
               </div>
-              <h3 className="text-foreground font-semibold mb-2">{card.title}</h3>
-              <p className="text-muted-foreground text-sm">{card.value}</p>
+              <h3 className="text-foreground font-bold text-lg mb-2">{card.title}</h3>
+              <p className="text-muted-foreground text-sm group-hover:text-foreground transition-colors">{card.value}</p>
             </a>
           ))}
         </div>
 
         {/* Contact Form */}
         <div className="max-w-2xl mx-auto">
-          <div className="bg-gradient-card rounded-2xl border border-border/50 p-8 md:p-10">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center">
-                <MessageSquare size={24} className="text-primary-foreground" />
+          <div className="bg-gradient-card rounded-3xl border border-border/50 p-8 md:p-12 shadow-card">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary">
+                <MessageSquare size={26} className="text-primary-foreground" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-foreground">Send us a message</h3>
+                <h3 className="text-2xl font-bold text-foreground">Send us a message</h3>
                 <p className="text-muted-foreground text-sm">We'll respond within 24 hours</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
                     Your Name
                   </label>
                   <Input
@@ -187,12 +190,12 @@ export function ContactSection() {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                     maxLength={100}
-                    className="bg-secondary border-border"
+                    className="bg-secondary/50 border-border/50 h-12 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary"
                   />
-                  {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
+                  {errors.name && <p className="text-destructive text-xs mt-1.5">{errors.name}</p>}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
                     Email Address
                   </label>
                   <Input
@@ -202,15 +205,15 @@ export function ContactSection() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
                     maxLength={255}
-                    className="bg-secondary border-border"
+                    className="bg-secondary/50 border-border/50 h-12 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary"
                   />
-                  {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-destructive text-xs mt-1.5">{errors.email}</p>}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
                     Phone Number
                   </label>
                   <Input
@@ -218,12 +221,12 @@ export function ContactSection() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     maxLength={20}
-                    className="bg-secondary border-border"
+                    className="bg-secondary/50 border-border/50 h-12 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary"
                   />
-                  {errors.phone && <p className="text-destructive text-xs mt-1">{errors.phone}</p>}
+                  {errors.phone && <p className="text-destructive text-xs mt-1.5">{errors.phone}</p>}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
                     Subject
                   </label>
                   <Input
@@ -231,14 +234,14 @@ export function ContactSection() {
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     maxLength={200}
-                    className="bg-secondary border-border"
+                    className="bg-secondary/50 border-border/50 h-12 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary"
                   />
-                  {errors.subject && <p className="text-destructive text-xs mt-1">{errors.subject}</p>}
+                  {errors.subject && <p className="text-destructive text-xs mt-1.5">{errors.subject}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
+                <label className="text-sm font-semibold text-foreground mb-2.5 block">
                   Your Message
                 </label>
                 <Textarea
@@ -248,21 +251,21 @@ export function ContactSection() {
                   required
                   rows={5}
                   maxLength={2000}
-                  className="bg-secondary border-border resize-none"
+                  className="bg-secondary/50 border-border/50 resize-none rounded-xl focus:border-primary focus:ring-1 focus:ring-primary"
                 />
-                {errors.message && <p className="text-destructive text-xs mt-1">{errors.message}</p>}
-                <p className="text-xs text-muted-foreground mt-1">{formData.message.length}/2000 characters</p>
+                {errors.message && <p className="text-destructive text-xs mt-1.5">{errors.message}</p>}
+                <p className="text-xs text-muted-foreground mt-2">{formData.message.length}/2000 characters</p>
               </div>
 
               <Button
                 type="submit"
                 variant="gradient"
-                size="lg"
-                className="w-full gap-2"
+                size="xl"
+                className="w-full gap-2.5 btn-glow"
                 disabled={loading}
               >
                 {loading ? "Sending..." : "Send Message"}
-                <Send size={18} />
+                <Send size={20} />
               </Button>
             </form>
           </div>
