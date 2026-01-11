@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
+import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, MessageSquare, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBranding } from "@/hooks/useBranding";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/animations";
 
 const contactSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
@@ -131,7 +133,7 @@ export function ContactSection() {
       
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-20">
+        <ScrollReveal className="text-center max-w-2xl mx-auto mb-20">
           <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold tracking-wider uppercase mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Get in Touch
@@ -143,30 +145,32 @@ export function ContactSection() {
             Ready to transform your business with cutting-edge technology? 
             Get in touch and let's discuss your project.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Contact Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto mb-16">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto mb-16" staggerDelay={0.1}>
           {contactCards.map((card, index) => (
-            <a
-              key={index}
-              href={card.href}
-              target={card.href.startsWith("http") ? "_blank" : undefined}
-              rel="noopener noreferrer"
-              className="group relative bg-gradient-card rounded-2xl border border-border/50 p-7 text-center hover:border-primary/50 hover-lift transition-all duration-500 animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
+            <StaggerItem key={index}>
+              <motion.a
+                href={card.href}
+                target={card.href.startsWith("http") ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                className="group relative bg-gradient-card rounded-2xl border border-border/50 p-7 text-center hover:border-primary/50 transition-all duration-500 block h-full"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
+              >
               <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mx-auto mb-5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
                 <card.icon size={28} className="text-white" />
               </div>
               <h3 className="text-foreground font-bold text-lg mb-2">{card.title}</h3>
               <p className="text-muted-foreground text-sm group-hover:text-foreground transition-colors">{card.value}</p>
-            </a>
+              </motion.a>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Contact Form */}
-        <div className="max-w-2xl mx-auto">
+        <ScrollReveal delay={0.2} className="max-w-2xl mx-auto">
           <div className="bg-gradient-card rounded-3xl border border-border/50 p-8 md:p-12 shadow-card">
             <div className="flex items-center gap-4 mb-10">
               <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary">
@@ -269,7 +273,7 @@ export function ContactSection() {
               </Button>
             </form>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Code2, Brain, Settings, Zap, Shield, Rocket, Play } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useIsMobile, usePrefersReducedMotion } from "@/hooks/useIsMobile";
 
@@ -209,7 +210,12 @@ export function HeroSection() {
       <div className="container mx-auto px-4 relative z-10 py-16 sm:py-24">
         <div className="max-w-5xl mx-auto">
           {/* Badge */}
-          <div className="flex justify-center mb-10 animate-fade-in">
+          <motion.div 
+            className="flex justify-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/25 backdrop-blur-sm group hover:border-primary/40 hover:bg-primary/15 transition-all duration-300 cursor-default">
               <Sparkles className="w-4 h-4 text-primary animate-pulse-slow" />
               <span className="text-sm text-foreground/90 font-medium">
@@ -217,12 +223,14 @@ export function HeroSection() {
               </span>
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             </div>
-          </div>
+          </motion.div>
 
           {/* Main Heading */}
-          <h1 
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-center mb-8 animate-fade-in leading-[1.05] tracking-tight"
-            style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.1s" }}
+          <motion.h1 
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-center mb-8 leading-[1.05] tracking-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <span className="block text-foreground">Transform Your</span>
             <span className="block mt-2 sm:mt-3">
@@ -230,20 +238,24 @@ export function HeroSection() {
               <span className="text-foreground"> with</span>
             </span>
             <span className="block text-foreground mt-2 sm:mt-3">Cutting-Edge Tech</span>
-          </h1>
+          </motion.h1>
 
           {/* Subheading */}
-          <p 
-            className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center mb-12 max-w-3xl mx-auto animate-fade-in leading-relaxed"
-            style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.2s" }}
+          <motion.p 
+            className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center mb-12 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
             We deliver innovative software solutions, AI-powered systems, and expert IT consulting to help businesses thrive in the digital age.
-          </p>
+          </motion.p>
 
           {/* CTA Buttons */}
-          <div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in"
-            style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.3s" }}
+          <motion.div 
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
             <Link to="/contact" className="w-full sm:w-auto">
               <Button 
@@ -268,17 +280,21 @@ export function HeroSection() {
                 View Live Demos
               </Button>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Stats Section */}
-          <div 
-            className="grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto mb-14 animate-fade-in"
-            style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.4s" }}
+          <motion.div 
+            className="grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto mb-14"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
             {stats.map((stat, index) => (
-              <div 
+              <motion.div 
                 key={index}
                 className="text-center p-4 sm:p-6 rounded-2xl bg-card/60 border border-border/50 backdrop-blur-sm hover:border-primary/40 hover:bg-card/80 transition-all duration-300 group"
+                whileHover={{ y: -5, scale: 1.02 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 group-hover:scale-105 transition-transform">
                   <AnimatedCounter 
@@ -288,25 +304,29 @@ export function HeroSection() {
                   />
                 </div>
                 <div className="text-xs sm:text-sm text-muted-foreground font-medium">{stat.label}</div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Service Tags */}
-          <div 
-            className="flex flex-wrap items-center justify-center gap-3 animate-fade-in"
-            style={{ animationDelay: useSimplifiedEffects ? "0s" : "0.5s" }}
+          <motion.div 
+            className="flex flex-wrap items-center justify-center gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
           >
             {serviceTags.map((tag, index) => (
-              <div 
+              <motion.div 
                 key={index} 
                 className="group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-secondary/60 border border-border/50 backdrop-blur-sm hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 cursor-default"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
               >
                 <tag.icon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                 <span className="text-sm text-foreground/80 group-hover:text-foreground font-medium transition-colors">{tag.label}</span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
 

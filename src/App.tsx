@@ -2,13 +2,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BrandingProvider } from "@/hooks/useBranding";
 import { ConsentProvider } from "@/hooks/useConsent";
 import { CookieConsent } from "@/components/gdpr/CookieConsent";
 import { WhatsAppButton } from "@/components/consultation/WhatsAppButton";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
+import { PageTransition } from "@/components/animations/PageTransition";
 import Analytics from "./pages/admin/Analytics";
 import ConsultationManagement from "./pages/admin/ConsultationManagement";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -49,6 +50,56 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <PageTransition key={location.pathname}>
+      <Routes location={location}>
+        {/* Public Routes */}
+        <Route path="/" element={<Index />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/services/erp-development" element={<ERPDevelopment />} />
+        <Route path="/services/hrm-development" element={<HRMDevelopment />} />
+        <Route path="/services/crm-development" element={<CRMDevelopment />} />
+        <Route path="/services/ai-integration" element={<AIIntegration />} />
+        <Route path="/services/web-development" element={<WebDevelopment />} />
+        <Route path="/services/mobile-development" element={<MobileDevelopment />} />
+        <Route path="/locations/software-company-dhaka" element={<SoftwareCompanyDhaka />} />
+        <Route path="/locations/it-services-bangladesh" element={<ITServicesBangladesh />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogDetail />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio/:slug" element={<PortfolioDetail />} />
+        <Route path="/demo" element={<Demo />} />
+        <Route path="/showcase/:slug" element={<Showcase />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/auth" element={<Auth />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/blog" element={<ProtectedRoute><BlogManagement /></ProtectedRoute>} />
+        <Route path="/admin/portfolio" element={<ProtectedRoute><PortfolioManagement /></ProtectedRoute>} />
+        <Route path="/admin/demo" element={<ProtectedRoute><DemoManagement /></ProtectedRoute>} />
+        <Route path="/admin/testimonials" element={<ProtectedRoute><TestimonialsManagement /></ProtectedRoute>} />
+        <Route path="/admin/messages" element={<ProtectedRoute><MessagesManagement /></ProtectedRoute>} />
+        <Route path="/admin/seo" element={<ProtectedRoute><SEOSettings /></ProtectedRoute>} />
+        <Route path="/admin/seo-dashboard" element={<ProtectedRoute><SEODashboard /></ProtectedRoute>} />
+        <Route path="/admin/chatbot" element={<ProtectedRoute><ChatbotConfig /></ProtectedRoute>} />
+        <Route path="/admin/branding" element={<ProtectedRoute><BrandingSettings /></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/admin/consultations" element={<ProtectedRoute><ConsultationManagement /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+        
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </PageTransition>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -59,47 +110,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <InteractionTracker>
-                <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/services/erp-development" element={<ERPDevelopment />} />
-              <Route path="/services/hrm-development" element={<HRMDevelopment />} />
-              <Route path="/services/crm-development" element={<CRMDevelopment />} />
-              <Route path="/services/ai-integration" element={<AIIntegration />} />
-              <Route path="/services/web-development" element={<WebDevelopment />} />
-              <Route path="/services/mobile-development" element={<MobileDevelopment />} />
-              <Route path="/locations/software-company-dhaka" element={<SoftwareCompanyDhaka />} />
-              <Route path="/locations/it-services-bangladesh" element={<ITServicesBangladesh />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogDetail />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/portfolio/:slug" element={<PortfolioDetail />} />
-              <Route path="/demo" element={<Demo />} />
-              <Route path="/showcase/:slug" element={<Showcase />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/auth" element={<Auth />} />
-              
-              {/* Admin Routes */}
-              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin/blog" element={<ProtectedRoute><BlogManagement /></ProtectedRoute>} />
-              <Route path="/admin/portfolio" element={<ProtectedRoute><PortfolioManagement /></ProtectedRoute>} />
-              <Route path="/admin/demo" element={<ProtectedRoute><DemoManagement /></ProtectedRoute>} />
-              <Route path="/admin/testimonials" element={<ProtectedRoute><TestimonialsManagement /></ProtectedRoute>} />
-              <Route path="/admin/messages" element={<ProtectedRoute><MessagesManagement /></ProtectedRoute>} />
-              <Route path="/admin/seo" element={<ProtectedRoute><SEOSettings /></ProtectedRoute>} />
-              <Route path="/admin/seo-dashboard" element={<ProtectedRoute><SEODashboard /></ProtectedRoute>} />
-              <Route path="/admin/chatbot" element={<ProtectedRoute><ChatbotConfig /></ProtectedRoute>} />
-              <Route path="/admin/branding" element={<ProtectedRoute><BrandingSettings /></ProtectedRoute>} />
-              <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-              <Route path="/admin/consultations" element={<ProtectedRoute><ConsultationManagement /></ProtectedRoute>} />
-              <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
-              
-              <Route path="*" element={<NotFound />} />
-                </Routes>
+                <AnimatedRoutes />
                 <WhatsAppButton />
                 <CookieConsent />
                 <ConsultationTrigger />
