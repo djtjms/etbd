@@ -37,8 +37,17 @@
     <meta name="ICBM" content="23.8103, 90.4125" />
   </head>
 
-  <body>
-    <div id="root"></div>
+  <body class="bg-[#0a0b0d] text-white">
+    <div id="root">
+      <!-- Loading fallback for slow connections -->
+      <div id="initial-loader" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0a0b0d;">
+        <div style="text-align: center; color: #6b7280;">
+          <div style="width: 40px; height: 40px; border: 3px solid #1f2937; border-top-color: #10b981; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+      <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

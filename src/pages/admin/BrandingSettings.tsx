@@ -34,19 +34,39 @@ export default function BrandingSettings() {
 
   const fetchBranding = async () => {
     const { data } = await supabase.from("branding_settings").select("*").limit(1).maybeSingle();
-    if (data) setBranding(data);
+    if (data) {
+      setBranding(data);
+    }
     setLoading(false);
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const { error } = await supabase.from("branding_settings").update(branding).eq("id", branding.id);
+    
+    // Prepare data without id for insert
+    const { id, ...brandingData } = branding;
+    
+    let error;
+    
+    if (id) {
+      // Update existing record
+      const result = await supabase.from("branding_settings").update(brandingData).eq("id", id);
+      error = result.error;
+    } else {
+      // Insert new record
+      const result = await supabase.from("branding_settings").insert([brandingData]).select().single();
+      error = result.error;
+      if (!error && result.data) {
+        setBranding(result.data);
+      }
+    }
+    
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Saved", description: "Branding updated successfully" });
-      await refetch(); // Refresh branding across the app
+      await refetch();
     }
     setSaving(false);
   };
