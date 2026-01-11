@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import logo from "@/assets/logo.jpg";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
@@ -179,9 +180,11 @@ export default function Auth() {
         <div className="bg-gradient-card rounded-2xl border border-border/50 p-8 md:p-10 animate-fade-in">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-primary-foreground font-bold text-3xl">e</span>
-            </div>
+            <img 
+              src={logo} 
+              alt="engineersTech" 
+              className="w-20 h-20 rounded-2xl mx-auto mb-4 shadow-lg"
+            />
             <h1 className="text-2xl font-bold text-foreground mb-2">
               {isLogin ? "Admin Login" : "Create Account"}
             </h1>
