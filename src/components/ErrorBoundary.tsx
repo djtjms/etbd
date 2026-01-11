@@ -37,26 +37,53 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
-          <div className="max-w-md w-full text-center space-y-6">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-destructive">Oops!</h1>
-              <h2 className="text-xl font-semibold text-foreground">Something went wrong</h2>
-              <p className="text-muted-foreground">
+        <div style={{ 
+          minHeight: '100vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          backgroundColor: '#0a0b0d',
+          padding: '16px'
+        }}>
+          <div style={{ maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444', marginBottom: '8px' }}>Oops!</h1>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#f9fafb', marginBottom: '8px' }}>Something went wrong</h2>
+              <p style={{ color: '#9ca3af' }}>
                 We're sorry, but something unexpected happened. Please try refreshing the page.
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
               <button
                 onClick={this.handleReload}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#10b981',
+                  color: '#0a0b0d',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  border: 'none',
+                  cursor: 'pointer',
+                  width: '100%',
+                  maxWidth: '200px'
+                }}
               >
                 Refresh Page
               </button>
               <button
                 onClick={this.handleGoHome}
-                className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors"
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#1f2937',
+                  color: '#f9fafb',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  border: 'none',
+                  cursor: 'pointer',
+                  width: '100%',
+                  maxWidth: '200px'
+                }}
               >
                 Go to Home
               </button>
@@ -64,11 +91,11 @@ class ErrorBoundary extends Component<Props, State> {
 
             {/* Show error details in development */}
             {import.meta.env.DEV && this.state.error && (
-              <details className="mt-6 text-left bg-muted p-4 rounded-lg">
-                <summary className="cursor-pointer text-sm font-medium text-muted-foreground">
+              <details style={{ marginTop: '24px', textAlign: 'left', backgroundColor: '#1f2937', padding: '16px', borderRadius: '8px' }}>
+                <summary style={{ cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500', color: '#9ca3af' }}>
                   Error Details (Dev Only)
                 </summary>
-                <pre className="mt-2 text-xs overflow-auto text-destructive">
+                <pre style={{ marginTop: '8px', fontSize: '0.75rem', overflow: 'auto', color: '#ef4444' }}>
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>
