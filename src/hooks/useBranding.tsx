@@ -27,7 +27,7 @@ const defaultBranding: BrandingData = {
   logo_url: null,
   logo_text: "engineersTech",
   tagline: "Enterprise Tech Solutions for the Future",
-  primary_color: "#90FFA3",
+  primary_color: "#1877F2",
   company_email: "info@engineerstechbd.com",
   company_phone: "+880 1234-567890",
   company_address: "Dhaka, Bangladesh",

@@ -57,15 +57,15 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        green: {
-          primary: "hsl(var(--green-primary))",
-          glow: "hsl(var(--green-glow))",
+        blue: {
+          primary: "hsl(var(--blue-primary))",
+          glow: "hsl(var(--blue-glow))",
         },
-        teal: {
-          accent: "hsl(var(--teal-accent))",
+        lightblue: {
+          accent: "hsl(var(--lightblue-accent))",
         },
-        cyan: {
-          accent: "hsl(var(--cyan-accent))",
+        sky: {
+          accent: "hsl(var(--sky-accent))",
         },
       },
       borderRadius: {
@@ -111,8 +111,8 @@ export default {
           to: { opacity: "1" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(135 100% 78% / 0.3)" },
-          "50%": { boxShadow: "0 0 40px hsl(135 100% 78% / 0.5)" },
+          "0%, 100%": { boxShadow: "0 0 20px hsl(217 90% 52% / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsl(217 90% 52% / 0.5)" },
         },
       },
       animation: {

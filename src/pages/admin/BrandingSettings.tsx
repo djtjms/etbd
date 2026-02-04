@@ -16,7 +16,7 @@ export default function BrandingSettings() {
     logo_url: "",
     logo_text: "engineersTech",
     tagline: "",
-    primary_color: "#90FFA3",
+    primary_color: "#1877F2",
     company_email: "",
     company_phone: "",
     company_address: "",
@@ -106,14 +106,14 @@ export default function BrandingSettings() {
                 <div className="flex gap-2">
                   <Input 
                     type="color" 
-                    value={branding.primary_color || "#90FFA3"} 
+                    value={branding.primary_color || "#1877F2"} 
                     onChange={(e) => setBranding({ ...branding, primary_color: e.target.value })} 
                     className="w-14 h-10 p-1 bg-secondary border-border cursor-pointer" 
                   />
                   <Input 
                     value={branding.primary_color || ""} 
                     onChange={(e) => setBranding({ ...branding, primary_color: e.target.value })} 
-                    placeholder="#90FFA3" 
+                    placeholder="#1877F2" 
                     className="bg-secondary border-border flex-1" 
                   />
                 </div>
