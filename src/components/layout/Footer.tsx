@@ -1,30 +1,13 @@
 import { Link } from "react-router-dom";
 import { Facebook, Linkedin, Twitter, Mail, Phone, MapPin, ArrowUpRight, Heart } from "lucide-react";
 import { useBranding } from "@/hooks/useBranding";
-import { Button } from "@/components/ui/button";
-
-const footerLinks = {
-  services: [
-    { label: "Enterprise Solutions", href: "/services#enterprise" },
-    { label: "Custom Development", href: "/services#custom" },
-    { label: "Security & Finance", href: "/services#security" },
-    { label: "AI Integration", href: "/services#ai" },
-  ],
-  company: [
-    { label: "About Us", href: "/about" },
-    { label: "Portfolio", href: "/portfolio" },
-    { label: "Blog", href: "/blog" },
-    { label: "Contact", href: "/contact" },
-  ],
-  legal: [
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-  ],
-};
+import { useLanguage } from "@/hooks/useLanguage";
+import engineersLogo from "@/assets/engineersTech-logo-white.svg";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const { branding } = useBranding();
+  const { t } = useLanguage();
 
   const logoText = branding?.logo_text || "engineersTech";
   const logoUrl = branding?.logo_url;
@@ -39,9 +22,27 @@ export function Footer() {
     { icon: Twitter, href: branding?.twitter_url || "https://twitter.com/engineerstechbd", label: "Twitter" },
   ].filter(s => s.href);
 
+  const serviceLinks = [
+    { label: t("footer.enterprise_solutions"), href: "/services#enterprise" },
+    { label: t("footer.custom_development"), href: "/services#custom" },
+    { label: t("footer.security_finance"), href: "/services#security" },
+    { label: t("footer.ai_integration"), href: "/services#ai" },
+  ];
+
+  const companyLinks = [
+    { label: t("footer.about_us"), href: "/about" },
+    { label: t("nav.portfolio"), href: "/portfolio" },
+    { label: t("nav.blog"), href: "/blog" },
+    { label: t("nav.contact"), href: "/contact" },
+  ];
+
+  const legalLinks = [
+    { label: t("footer.privacy"), href: "/privacy" },
+    { label: t("footer.terms"), href: "/terms" },
+  ];
+
   return (
     <footer className="bg-gradient-card border-t border-border/50 relative overflow-hidden">
-      {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-mesh opacity-30" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
       
@@ -51,29 +52,12 @@ export function Footer() {
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-5 group">
               {logoUrl ? (
-                <img 
-                  src={logoUrl} 
-                  alt={logoText} 
-                  className="w-11 h-11 rounded-xl object-contain ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all" 
-                />
+                <img src={logoUrl} alt={logoText} className="h-8 object-contain" />
               ) : (
-                <div className="w-11 h-11 bg-gradient-primary rounded-xl flex items-center justify-center shadow-primary group-hover:shadow-primary-lg transition-all">
-                  <span className="text-primary-foreground font-bold text-xl">e</span>
-                </div>
+                <img src={engineersLogo} alt="engineersTech" className="h-7 object-contain" />
               )}
-              <span className="text-xl font-bold text-foreground">
-                {logoText.includes("Tech") ? (
-                  <>
-                    {logoText.replace("Tech", "")}<span className="text-gradient">Tech</span>
-                  </>
-                ) : (
-                  logoText
-                )}
-              </span>
             </Link>
-            <p className="text-muted-foreground text-sm mb-6 leading-relaxed max-w-xs">
-              {tagline}
-            </p>
+            <p className="text-muted-foreground text-sm mb-6 leading-relaxed max-w-xs">{tagline}</p>
             <div className="flex gap-2">
               {socialLinks.map((social) => (
                 <a
@@ -94,15 +78,12 @@ export function Footer() {
           <div>
             <h3 className="text-foreground font-semibold mb-5 text-sm uppercase tracking-wider flex items-center gap-2">
               <span className="w-8 h-0.5 bg-gradient-primary rounded-full" />
-              Services
+              {t("footer.services")}
             </h3>
             <ul className="space-y-3">
-              {footerLinks.services.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.href}
-                    className="group text-muted-foreground text-sm hover:text-primary transition-all inline-flex items-center gap-1"
-                  >
+              {serviceLinks.map((link) => (
+                <li key={link.href}>
+                  <Link to={link.href} className="group text-muted-foreground text-sm hover:text-primary transition-all inline-flex items-center gap-1">
                     <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
                     <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
@@ -115,15 +96,12 @@ export function Footer() {
           <div>
             <h3 className="text-foreground font-semibold mb-5 text-sm uppercase tracking-wider flex items-center gap-2">
               <span className="w-8 h-0.5 bg-gradient-primary rounded-full" />
-              Company
+              {t("footer.company")}
             </h3>
             <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.href}
-                    className="group text-muted-foreground text-sm hover:text-primary transition-all inline-flex items-center gap-1"
-                  >
+              {companyLinks.map((link) => (
+                <li key={link.href}>
+                  <Link to={link.href} className="group text-muted-foreground text-sm hover:text-primary transition-all inline-flex items-center gap-1">
                     <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
                     <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
@@ -136,14 +114,11 @@ export function Footer() {
           <div>
             <h3 className="text-foreground font-semibold mb-5 text-sm uppercase tracking-wider flex items-center gap-2">
               <span className="w-8 h-0.5 bg-gradient-primary rounded-full" />
-              Contact
+              {t("footer.contact")}
             </h3>
             <ul className="space-y-4">
               <li>
-                <a
-                  href={`mailto:${email}`}
-                  className="group flex items-start gap-3 text-muted-foreground hover:text-foreground transition-colors"
-                >
+                <a href={`mailto:${email}`} className="group flex items-start gap-3 text-muted-foreground hover:text-foreground transition-colors">
                   <div className="w-9 h-9 rounded-lg bg-secondary/80 flex items-center justify-center shrink-0 group-hover:bg-primary/10 group-hover:text-primary border border-border/50 transition-all">
                     <Mail size={16} />
                   </div>
@@ -151,10 +126,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a
-                  href={`tel:${phone.replace(/\s/g, '')}`}
-                  className="group flex items-start gap-3 text-muted-foreground hover:text-foreground transition-colors"
-                >
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="group flex items-start gap-3 text-muted-foreground hover:text-foreground transition-colors">
                   <div className="w-9 h-9 rounded-lg bg-secondary/80 flex items-center justify-center shrink-0 group-hover:bg-primary/10 group-hover:text-primary border border-border/50 transition-all">
                     <Phone size={16} />
                   </div>
@@ -174,15 +146,11 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border/30 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm flex items-center gap-1.5">
-            © {currentYear} {logoText}. Made with <Heart className="w-3.5 h-3.5 text-primary fill-primary" /> All rights reserved.
+            © {currentYear} {logoText}. {t("footer.made_with")} <Heart className="w-3.5 h-3.5 text-primary fill-primary" /> {t("footer.rights")}
           </p>
           <div className="flex items-center gap-6">
-            {footerLinks.legal.map((link) => (
-              <Link
-                key={link.label}
-                to={link.href}
-                className="text-muted-foreground text-sm hover:text-primary transition-colors"
-              >
+            {legalLinks.map((link) => (
+              <Link key={link.href} to={link.href} className="text-muted-foreground text-sm hover:text-primary transition-colors">
                 {link.label}
               </Link>
             ))}

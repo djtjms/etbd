@@ -42,9 +42,16 @@
     --blue-primary: 217 90% 52%;
     --blue-glow: 217 95% 65%;
     --blue-dark: 217 85% 30%;
+    --blue-hover: 217 92% 58%;
+    --blue-active: 217 88% 45%;
+    --blue-focus: 217 90% 62%;
+    --blue-muted: 217 50% 70%;
     --lightblue-accent: 200 85% 55%;
+    --lightblue-hover: 200 88% 62%;
     --sky-accent: 195 90% 60%;
+    --sky-hover: 195 92% 68%;
     --navy: 217 75% 40%;
+    --navy-hover: 217 78% 48%;
 
     /* Refined gradients - Blue Theme */
     --gradient-primary: linear-gradient(135deg, hsl(217 90% 52%) 0%, hsl(200 85% 55%) 50%, hsl(195 90% 60%) 100%);
