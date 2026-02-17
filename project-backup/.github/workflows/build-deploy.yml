@@ -9,7 +9,7 @@ on:
     branches: [main, master]
     paths:
       - 'project-backup/**'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -33,51 +33,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint
+        run: npx tsc --noEmit || true
+
       - name: Build frontend
         run: npm run build
 
       - name: Prepare deployment package
         run: |
-          # Create build directory
           mkdir -p build
-          
-          # Copy built frontend
           cp -r dist/* build/
-          
-          # Copy API
           mkdir -p build/api
           cp -r api/* build/api/
-          
-          # Copy migrations
           mkdir -p build/database
           cp -r migrations/* build/database/
-          
-          # Create uploads directory
           mkdir -p build/api/uploads
           touch build/api/uploads/.gitkeep
-          
-          # Create .htaccess for SPA routing
           cat > build/.htaccess << 'EOF'
           RewriteEngine On
           RewriteBase /
-          
-          # Don't rewrite API requests
           RewriteRule ^api/ - [L]
-          
-          # Serve existing files directly
           RewriteCond %{REQUEST_FILENAME} -f [OR]
           RewriteCond %{REQUEST_FILENAME} -d
           RewriteRule ^ - [L]
-          
-          # SPA fallback
           RewriteRule ^ index.html [L]
           EOF
-          
-          # Create setup instructions
           cat > build/SETUP.txt << 'EOF'
           EngineersTech Deployment Instructions
           =====================================
-          
           1. Extract all files to your web server's public directory
           2. Create a MySQL database
           3. Import database/001_create_all_tables.sql

@@ -4,11 +4,13 @@ import { Layout } from "@/components/layout/Layout";
 import { Monitor, Smartphone, Code2, Filter, Search, Briefcase, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { LivePreview } from "@/components/portfolio/LivePreview";
 import { PreviewModal } from "@/components/portfolio/PreviewModal";
 import { ConsultationPopup } from "@/components/consultation/ConsultationPopup";
 import { useBranding } from "@/hooks/useBranding";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface DemoProject {
   id: string;
@@ -74,6 +76,7 @@ export default function Demo() {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const { branding } = useBranding();
+  const { t } = useLanguage();
   
   const whatsappNumber = branding?.whatsapp_number || "+8801873722228";
   const cleanNumber = whatsappNumber.replace(/[^0-9]/g, "");
@@ -208,14 +211,13 @@ export default function Demo() {
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
               <Briefcase size={16} className="text-primary" />
-              <span className="text-primary text-sm font-medium">Project Showcase</span>
+              <span className="text-primary text-sm font-medium">{t("demo.badge")}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6 leading-tight">
-              Explore Our <span className="text-gradient">Project Showcase</span>
+              {t("demo.title")} <span className="text-gradient">{t("demo.title_highlight")}</span>
             </h1>
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-2 max-w-2xl mx-auto">
-              Discover our portfolio of successful projects. Interactive demos, live previews, 
-              and detailed case studies of apps, websites, and enterprise solutions.
+              {t("demo.subtitle")}
             </p>
           </div>
         </div>
@@ -231,7 +233,7 @@ export default function Demo() {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search projects by name or description..."
+                placeholder={t("demo.search_placeholder")}
                 className="pl-9 sm:pl-10 bg-secondary border-border text-sm sm:text-base h-10 sm:h-11"
               />
             </div>
@@ -249,15 +251,24 @@ export default function Demo() {
                   onClick={() => setFilter(type)}
                   className="capitalize text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-9"
                 >
-                  {type === "all" ? "All Projects" : typeLabels[type] || type}
+                  {type === "all" ? t("demo.all") : typeLabels[type] || type}
                 </Button>
               ))}
             </div>
           )}
 
           {loading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading projects...</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-gradient-card rounded-2xl border border-border/50 overflow-hidden">
+                  <Skeleton className="aspect-video w-full" />
+                  <div className="p-4 sm:p-6 space-y-3">
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredProjects.length === 0 ? (
             <div className="text-center py-12 max-w-md mx-auto">
