@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BrandingProvider } from "@/hooks/useBranding";
 import { ConsentProvider } from "@/hooks/useConsent";
+import { LanguageProvider } from "@/hooks/useLanguage";
 import { CookieConsent } from "@/components/gdpr/CookieConsent";
 import { WhatsAppButton } from "@/components/consultation/WhatsAppButton";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
@@ -102,20 +103,22 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <BrandingProvider>
-        <ConsentProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <InteractionTracker>
-                <AnimatedRoutes />
-                <WhatsAppButton />
-                <CookieConsent />
-                <ConsultationTrigger />
-              </InteractionTracker>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ConsentProvider>
+        <LanguageProvider>
+          <ConsentProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <InteractionTracker>
+                  <AnimatedRoutes />
+                  <WhatsAppButton />
+                  <CookieConsent />
+                  <ConsultationTrigger />
+                </InteractionTracker>
+              </BrowserRouter>
+            </TooltipProvider>
+          </ConsentProvider>
+        </LanguageProvider>
       </BrandingProvider>
     </AuthProvider>
   </QueryClientProvider>

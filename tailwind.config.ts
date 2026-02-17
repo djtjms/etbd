@@ -60,12 +60,22 @@ export default {
         blue: {
           primary: "hsl(var(--blue-primary))",
           glow: "hsl(var(--blue-glow))",
+          hover: "hsl(var(--blue-hover))",
+          active: "hsl(var(--blue-active))",
+          focus: "hsl(var(--blue-focus))",
+          muted: "hsl(var(--blue-muted))",
         },
         lightblue: {
           accent: "hsl(var(--lightblue-accent))",
+          hover: "hsl(var(--lightblue-hover))",
         },
         sky: {
           accent: "hsl(var(--sky-accent))",
+          hover: "hsl(var(--sky-hover))",
+        },
+        navy: {
+          DEFAULT: "hsl(var(--navy))",
+          hover: "hsl(var(--navy-hover))",
         },
       },
       borderRadius: {
