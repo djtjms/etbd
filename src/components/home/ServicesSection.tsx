@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useBranding } from "@/hooks/useBranding";
+import { useLanguage } from "@/hooks/useLanguage";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/animations";
 
@@ -116,6 +117,7 @@ const generateFingerprint = () => {
 export function ServicesSection() {
   const [expandedService, setExpandedService] = useState<string | null>(null);
   const { branding } = useBranding();
+  const { t } = useLanguage();
   const whatsappNumber = branding?.whatsapp_number || "+8801873722228";
   const cleanNumber = whatsappNumber.replace(/[^0-9]/g, "");
 
@@ -165,14 +167,13 @@ export function ServicesSection() {
         <ScrollReveal className="text-center max-w-2xl mx-auto mb-20">
           <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold tracking-wider uppercase mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Our Services
+            {t("services.badge")}
           </span>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            What We <span className="text-gradient">Offer</span>
+            {t("services.title")} <span className="text-gradient">{t("services.title_highlight")}</span>
           </h2>
           <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-            Comprehensive technology solutions designed to accelerate your business growth 
-            and digital transformation.
+            {t("services.subtitle")}
           </p>
         </ScrollReveal>
 
@@ -200,7 +201,7 @@ export function ServicesSection() {
                 <div className="absolute bottom-4 right-4">
                   <Button variant="gradient" size="sm" className="gap-2 text-xs shadow-primary-lg">
                     <MessageCircle size={14} />
-                    Chat Now
+                    {t("services.chat_now")}
                   </Button>
                 </div>
               </div>
@@ -267,7 +268,7 @@ export function ServicesSection() {
         <ScrollReveal delay={0.3} className="text-center mt-16">
           <Link to="/services">
             <Button variant="outline" size="lg" className="gap-2.5 group">
-              View All Services
+              {t("services.view_all")}
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
