@@ -1,9 +1,12 @@
 import { Layout } from "@/components/layout/Layout";
 import { Link } from "react-router-dom";
 import { Shield, ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
 
 export default function Privacy() {
+  const { t } = useLanguage();
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -13,17 +16,14 @@ export default function Privacy() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
             <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-6 transition-colors">
-              <ArrowLeft size={16} />
-              Back to Home
+              <ArrowLeft size={16} />{t("privacy.back")}
             </Link>
             <div className="flex items-center gap-4 mb-6">
               <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center">
                 <Shield size={28} className="text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-                  Privacy Policy
-                </h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground">{t("privacy.title")}</h1>
                 <p className="text-muted-foreground">Last updated: December 2024</p>
               </div>
             </div>
@@ -31,7 +31,7 @@ export default function Privacy() {
         </div>
       </section>
 
-      {/* Content */}
+      {/* Content - keeping static legal text as-is since legal documents shouldn't be auto-translated */}
       <section className="py-12 bg-card">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto prose prose-invert">
