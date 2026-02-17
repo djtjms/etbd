@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBranding } from "@/hooks/useBranding";
+import { useLanguage } from "@/hooks/useLanguage";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/animations";
 
 const contactSchema = z.object({
@@ -20,6 +21,7 @@ const contactSchema = z.object({
 
 export function ContactSection() {
   const { branding } = useBranding();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,21 +43,21 @@ export function ContactSection() {
   const contactCards = [
     {
       icon: Mail,
-      title: "Email Us",
+      title: t("contact.email_us"),
       value: email,
       href: `mailto:${email}`,
-      color: "from-green-500 to-teal-500",
+      color: "from-blue-500 to-sky-500",
     },
     {
       icon: Phone,
-      title: "WhatsApp",
+      title: t("contact.whatsapp"),
       value: phone,
       href: `https://wa.me/${cleanWhatsapp}`,
-      color: "from-teal-500 to-cyan-500",
+      color: "from-sky-500 to-cyan-500",
     },
     {
       icon: MapPin,
-      title: "Location",
+      title: t("contact.location"),
       value: address,
       href: `https://maps.google.com/?q=${encodeURIComponent(address)}`,
       color: "from-cyan-500 to-blue-500",
@@ -99,8 +101,8 @@ export function ContactSection() {
       }
 
       toast({
-        title: "Message sent!",
-        description: "We'll get back to you as soon as possible.",
+        title: t("contact.success_title"),
+        description: t("contact.success_desc"),
       });
 
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
@@ -116,7 +118,7 @@ export function ContactSection() {
       } else {
         toast({
           title: "Error",
-          description: "Failed to send message. Please try again.",
+          description: t("contact.error"),
           variant: "destructive",
         });
       }
@@ -136,14 +138,13 @@ export function ContactSection() {
         <ScrollReveal className="text-center max-w-2xl mx-auto mb-20">
           <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold tracking-wider uppercase mb-4 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Get in Touch
+            {t("contact.badge")}
           </span>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Let's Build <span className="text-gradient">Something Great</span>
+            {t("contact.title")} <span className="text-gradient">{t("contact.title_highlight")}</span>
           </h2>
           <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-            Ready to transform your business with cutting-edge technology? 
-            Get in touch and let's discuss your project.
+            {t("contact.subtitle")}
           </p>
         </ScrollReveal>
 
@@ -177,17 +178,15 @@ export function ContactSection() {
                 <MessageSquare size={26} className="text-primary-foreground" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-foreground">Send us a message</h3>
-                <p className="text-muted-foreground text-sm">We'll respond within 24 hours</p>
+                <h3 className="text-2xl font-bold text-foreground">{t("contact.form_title")}</h3>
+                <p className="text-muted-foreground text-sm">{t("contact.form_subtitle")}</p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
-                    Your Name
-                  </label>
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">{t("contact.name")}</label>
                   <Input
                     placeholder="John Doe"
                     value={formData.name}
@@ -199,9 +198,7 @@ export function ContactSection() {
                   {errors.name && <p className="text-destructive text-xs mt-1.5">{errors.name}</p>}
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
-                    Email Address
-                  </label>
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">{t("contact.email")}</label>
                   <Input
                     type="email"
                     placeholder="john@example.com"
@@ -217,9 +214,7 @@ export function ContactSection() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
-                    Phone Number
-                  </label>
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">{t("contact.phone")}</label>
                   <Input
                     placeholder={phone}
                     value={formData.phone}
@@ -230,9 +225,7 @@ export function ContactSection() {
                   {errors.phone && <p className="text-destructive text-xs mt-1.5">{errors.phone}</p>}
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-foreground mb-2.5 block">
-                    Subject
-                  </label>
+                  <label className="text-sm font-semibold text-foreground mb-2.5 block">{t("contact.subject")}</label>
                   <Input
                     placeholder="Project Inquiry"
                     value={formData.subject}
@@ -245,11 +238,9 @@ export function ContactSection() {
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-foreground mb-2.5 block">
-                  Your Message
-                </label>
+                <label className="text-sm font-semibold text-foreground mb-2.5 block">{t("contact.message")}</label>
                 <Textarea
-                  placeholder="Tell us about your project..."
+                  placeholder={t("contact.message_placeholder")}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   required
@@ -258,7 +249,7 @@ export function ContactSection() {
                   className="bg-secondary/50 border-border/50 resize-none rounded-xl focus:border-primary focus:ring-1 focus:ring-primary"
                 />
                 {errors.message && <p className="text-destructive text-xs mt-1.5">{errors.message}</p>}
-                <p className="text-xs text-muted-foreground mt-2">{formData.message.length}/2000 characters</p>
+                <p className="text-xs text-muted-foreground mt-2">{formData.message.length}/2000 {t("contact.characters")}</p>
               </div>
 
               <Button
@@ -268,7 +259,7 @@ export function ContactSection() {
                 className="w-full gap-2.5 btn-glow"
                 disabled={loading}
               >
-                {loading ? "Sending..." : "Send Message"}
+                {loading ? t("contact.sending") : t("contact.send")}
                 <Send size={20} />
               </Button>
             </form>

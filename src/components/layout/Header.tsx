@@ -41,6 +41,7 @@ export function Header() {
   }, [location.pathname]);
 
   const logoUrl = branding?.logo_url?.trim() || null;
+  const currentLang = languages.find(l => l.code === language);
 
   return (
     <header 
@@ -83,21 +84,26 @@ export function Header() {
             ))}
           </nav>
 
-          {/* CTA + Language */}
+          {/* CTA + Compact Language Switcher */}
           <div className="hidden lg:flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                  <Globe className="w-4 h-4" />
+                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2.5">
+                  <Globe className="w-3.5 h-3.5" />
+                  <span className="text-xs font-semibold">{currentLang?.flag}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
+              <DropdownMenuContent align="end" className="min-w-[140px]">
                 {languages.map((lang) => (
                   <DropdownMenuItem
                     key={lang.code}
                     onClick={() => setLanguage(lang.code)}
-                    className={cn(language === lang.code && "bg-primary/10 text-primary")}
+                    className={cn(
+                      "text-xs gap-2 cursor-pointer",
+                      language === lang.code && "bg-primary/10 text-primary font-medium"
+                    )}
                   >
+                    <span className="font-semibold w-5">{lang.flag}</span>
                     {lang.name}
                   </DropdownMenuItem>
                 ))}
@@ -149,22 +155,22 @@ export function Header() {
                 </Link>
               ))}
               
-              {/* Mobile Language Selector */}
+              {/* Compact Mobile Language Selector */}
               <div className="pt-3 px-4">
-                <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">Language</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
                       onClick={() => setLanguage(lang.code)}
                       className={cn(
-                        "px-3 py-1.5 rounded-lg text-sm transition-all",
+                        "w-9 h-9 rounded-lg text-xs font-bold transition-all flex items-center justify-center",
                         language === lang.code
                           ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-muted-foreground hover:text-foreground"
+                          : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
                       )}
+                      title={lang.name}
                     >
-                      {lang.name}
+                      {lang.flag}
                     </button>
                   ))}
                 </div>
