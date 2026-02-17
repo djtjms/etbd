@@ -1,134 +1,113 @@
 
-# Blue Branding Color Theme Update Plan
 
-## Logo Color Analysis
+# Parallel Update Plan: i18n Expansion, Cleanup, UX Fixes, and CI/CD
 
-Based on the uploaded logo, the new brand color is a vibrant **blue**:
+## Phase 1: Fix Loading Screen Animation Stuck
 
-| Color | HSL Value | Hex Value | Usage |
-|-------|-----------|-----------|-------|
-| Primary Blue | `217 90% 52%` | `#1877F2` | Main brand color, buttons, links |
-| Blue Glow | `217 95% 65%` | `#4A9BFF` | Hover states, glow effects |
-| Blue Dark | `217 85% 30%` | `#0B4A9D` | Dark accent |
-| Light Blue (Accent) | `200 85% 55%` | `#2BB3E8` | Secondary accent |
-| Sky Blue | `195 90% 60%` | `#33C3F0` | Tertiary accent |
+**Problem:** The loading spinner in `index.html` uses green (`#10b981`) instead of the new blue brand color, and the loader is removed synchronously in `main.tsx` before React actually renders, which can cause a flash or stuck state.
+
+**Changes:**
+- `index.html` (lines 49-51): Update spinner `border-top-color` from `#10b981` to `#1877F2`, and the brand text color from `#10b981` to `#1877F2`. Use the new SVG logo instead of `logo.jpg`.
+- `src/main.tsx`: Wrap loader removal in a `requestAnimationFrame` or `setTimeout(0)` to ensure React has mounted before removing the fallback, preventing the stuck/flash issue.
 
 ---
 
-## Files to Update
+## Phase 2: Remove Old Unnecessary Logo and Branding Files
 
-### 1. Main CSS Variables (src/index.css)
+**Files to delete:**
+- `public/logo.jpg` -- old green-themed logo (replaced by `engineersTech-logo-white.svg`)
+- `src/assets/logo.jpg` -- old green-themed logo
+- `public/placeholder.svg` -- unused placeholder
 
-Update the CSS custom properties to use blue instead of green:
-
-```text
-OLD (Green Theme)              ->  NEW (Blue Theme)
---primary: 145 80% 58%         ->  --primary: 217 90% 52%
---accent: 165 70% 45%          ->  --accent: 200 85% 55%
---ring: 145 80% 58%            ->  --ring: 217 90% 52%
---green-primary: 145 80% 58%   ->  --blue-primary: 217 90% 52%
---green-glow: 145 85% 68%      ->  --blue-glow: 217 95% 65%
---green-dark: 145 75% 25%      ->  --blue-dark: 217 85% 30%
---teal-accent: 165 70% 45%     ->  --lightblue-accent: 200 85% 55%
---cyan-accent: 185 75% 50%     ->  --sky-accent: 195 90% 60%
-```
-
-**Gradient Updates:**
-- `--gradient-primary`: Blue to light blue to sky blue
-- `--gradient-subtle`: Blue with transparency
-- `--gradient-glow`: Blue radial glow
-- `--gradient-mesh`: Blue mesh pattern
-
-**Shadow Updates:**
-- `--shadow-primary`: Blue glow shadow
-- `--shadow-primary-lg`: Larger blue shadow
-- `--shadow-glow`: Blue ambient glow
-
-**Sidebar Updates:**
-- `--sidebar-primary`: Blue
-- `--sidebar-ring`: Blue
-
-**Keyframe Animation:**
-- Update `@keyframes glow` to use blue color
+**Files to update:**
+- `index.html`: Change favicon and apple-touch-icon from `/logo.jpg` to `/engineersTech-logo-white.svg`
+- `project-backup/public/logo.jpg` and `project-backup/src/assets/logo.jpg` can remain for the PHP backup deployment (separate codebase)
 
 ---
 
-### 2. Tailwind Config (tailwind.config.ts)
+## Phase 3: Expand i18n to All Remaining Pages
 
-Replace color aliases:
-- `green.primary` -> `blue.primary`
-- `green.glow` -> `blue.glow`
-- `teal.accent` -> `lightblue.accent`
-- `cyan.accent` -> `sky.accent`
+Add translation keys to `src/hooks/useLanguage.tsx` for all 10 languages covering:
 
-Update `pulse-glow` keyframe to use blue.
+**About page keys:**
+- `about.badge`, `about.title`, `about.title_highlight`, `about.subtitle`
+- `about.mission_badge`, `about.mission_title`, `about.mission_desc`
+- `about.mission_items` (4 bullet points)
+- `about.values_badge`, `about.values_title`
+- `about.value_*` (4 values: innovation, client-centric, excellence, integrity)
+- `about.team_badge`, `about.team_title`
+- `about.cta_title`, `about.cta_desc`, `about.cta_button`, `about.cta_services`
+- `about.stats_*` (projects, clients, years, support)
 
----
+**Services page keys:**
+- `services.page_badge`, `services.page_title`, `services.page_title_highlight`, `services.page_subtitle`
+- `services.free_consultation`, `services.discuss_whatsapp`, `services.learn_more`
+- `services.cta_title`, `services.cta_desc`, `services.cta_start`, `services.cta_view_work`
 
-### 3. Branding Settings (src/hooks/useBranding.tsx)
+**Blog page keys:**
+- `blog.badge`, `blog.title`, `blog.title_highlight`, `blog.subtitle`
+- `blog.loading`, `blog.no_posts`, `blog.read_more`, `blog.contact_us`
+- `blog.stay_updated`, `blog.stay_updated_desc`, `blog.subscribe`
 
-Update default primary color:
-- `primary_color: "#90FFA3"` -> `primary_color: "#1877F2"`
+**Portfolio page keys:**
+- `portfolio.badge`, `portfolio.title`, `portfolio.title_highlight`, `portfolio.subtitle`
+- `portfolio.loading`, `portfolio.coming_soon`, `portfolio.discuss_project`
+- `portfolio.preview`, `portfolio.view_case_study`, `portfolio.get_quote`
+- `portfolio.cta_title`, `portfolio.cta_desc`, `portfolio.cta_start`
 
----
+**Demo page keys:**
+- `demo.badge`, `demo.title`, `demo.title_highlight`, `demo.subtitle`
+- `demo.search_placeholder`, `demo.all`, `demo.featured`
+- `demo.no_demos`, `demo.loading`
 
-### 4. Admin Branding Page (src/pages/admin/BrandingSettings.tsx)
+**Privacy / Terms page keys:**
+- `privacy.title`, `privacy.back`, `terms.title`, `terms.back`
 
-Update default/placeholder color values:
-- Default `primary_color: "#90FFA3"` -> `"#1877F2"`
-- Placeholder text: `"#90FFA3"` -> `"#1877F2"`
+Then update each page component to import `useLanguage` and use `t()` for all static text.
 
----
-
-### 5. Project Backup Files (Mirror Changes)
-
-Apply the same updates to:
-- `project-backup/src/index.css`
-- `project-backup/tailwind.config.ts`
-- `project-backup/src/hooks/useBranding.tsx`
-- `project-backup/src/pages/admin/BrandingSettings.tsx`
-
----
-
-## Color Palette Summary
-
-| Variable | Old Value (Green) | New Value (Blue) |
-|----------|-------------------|------------------|
-| `--primary` | `145 80% 58%` | `217 90% 52%` |
-| `--accent` | `165 70% 45%` | `200 85% 55%` |
-| `--ring` | `145 80% 58%` | `217 90% 52%` |
-| `--*-primary` | `145 80% 58%` | `217 90% 52%` |
-| `--*-glow` | `145 85% 68%` | `217 95% 65%` |
-| `--*-dark` | `145 75% 25%` | `217 85% 30%` |
-| `--lightblue-accent` | `165 70% 45%` | `200 85% 55%` |
-| `--sky-accent` | `185 75% 50%` | `195 90% 60%` |
-
----
-
-## Implementation Order
-
-1. **Update src/index.css** - Main CSS variables and gradients
-2. **Update tailwind.config.ts** - Tailwind color mappings
-3. **Update src/hooks/useBranding.tsx** - Default branding color
-4. **Update src/pages/admin/BrandingSettings.tsx** - Admin defaults
-5. **Mirror to project-backup/** - All corresponding files
+**Pages to update:**
+- `src/pages/About.tsx`
+- `src/pages/Services.tsx`
+- `src/pages/Blog.tsx`
+- `src/pages/Portfolio.tsx`
+- `src/pages/Demo.tsx`
+- `src/pages/Privacy.tsx`
+- `src/pages/Terms.tsx`
 
 ---
 
-## Technical Notes
+## Phase 4: UI/UX Polish and Preloading Fixes
 
-- The primary color `#1877F2` (HSL: 217 90% 52%) matches the logo's blue
-- Foreground colors remain unchanged (white/dark text on blue works well)
-- The gradient will flow from primary blue -> light blue -> sky blue
-- Glow effects will emit blue light instead of green
-- All button states, links, and interactive elements will adopt the blue theme
+**Preloading improvements:**
+- Add `<link rel="preload">` for the SVG logo and critical fonts in `index.html`
+- Add `loading="lazy"` to non-critical images in service pages and portfolio
+
+**UI fixes:**
+- Services page: The `lg:flex-row-reverse` class on a grid doesn't work. Fix alternating layout by using proper `lg:order-1` / `lg:order-2` (already partially done, just remove the broken `lg:flex-row-reverse` class)
+- Blog/Portfolio empty states: Add skeleton loading instead of plain text "Loading..."
+- Ensure all interactive elements have proper focus-visible styles (already in CSS, just verify)
 
 ---
 
-## Logo File
+## Phase 5: GitHub Actions Workflow Update
 
-The new logo image will need to be copied to:
-- `src/assets/logo.jpg` (or `.png` if converted)
-- `public/logo.jpg`
-- `project-backup/src/assets/logo.jpg`
-- `project-backup/public/logo.jpg`
+Update `project-backup/.github/workflows/build-deploy.yml`:
+- Remove the broken FTP deploy job (was causing "Input required: server" error)
+- Add a lint step before build to catch errors early
+- Keep only the build + artifact + release jobs
+- Optionally add `project-backup/.github/workflows/deploy.yml` cleanup if it duplicates
+
+---
+
+## Technical Summary
+
+| Phase | Files Changed | Scope |
+|-------|--------------|-------|
+| 1 - Loading fix | `index.html`, `src/main.tsx` | 2 files |
+| 2 - Cleanup | Delete 2-3 files, update `index.html` | 3-4 files |
+| 3 - i18n expansion | `useLanguage.tsx` + 7 page files | 8 files |
+| 4 - UX polish | `index.html`, `Services.tsx`, `Blog.tsx`, `Portfolio.tsx` | 4 files |
+| 5 - CI/CD | `build-deploy.yml` | 1 file |
+
+All phases will be implemented in parallel where possible (phases 1-2 together, phase 3 all pages at once, phases 4-5 together).
+
