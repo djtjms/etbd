@@ -93,7 +93,6 @@ export default function Demo() {
       if (!error && data) {
         setProjects(data);
         
-        // Check if a project is requested via URL params (masked URL support)
         const projectParam = searchParams.get("project");
         const idParam = searchParams.get("id");
         
@@ -118,7 +117,6 @@ export default function Demo() {
     fetchProjects();
   }, [searchParams]);
 
-  // Filter by type and search query
   const filteredProjects = projects.filter(p => {
     const matchesType = filter === "all" || p.project_type === filter;
     const matchesSearch = !searchQuery || 
@@ -137,7 +135,6 @@ export default function Demo() {
     const sessionId = sessionStorage.getItem('session_id') || `session_${Date.now()}_${fingerprint}`;
     sessionStorage.setItem('session_id', sessionId);
 
-    // Track project view with fingerprint
     try {
       await supabase.from('interaction_events').insert({
         session_id: sessionId,
@@ -156,7 +153,6 @@ export default function Demo() {
       console.log('Tracking error:', error);
     }
     
-    // Increment view count
     if (project.id) {
       await supabase
         .from("demo_projects")
@@ -170,7 +166,6 @@ export default function Demo() {
     const sessionId = sessionStorage.getItem('session_id') || `session_${Date.now()}_${fingerprint}`;
     sessionStorage.setItem('session_id', sessionId);
 
-    // Track WhatsApp click
     try {
       await supabase.from('interaction_events').insert({
         session_id: sessionId,
@@ -226,7 +221,6 @@ export default function Demo() {
       {/* Search & Filter Section */}
       <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-card">
         <div className="container mx-auto px-4">
-          {/* Search Bar */}
           <div className="max-w-md sm:max-w-lg md:max-w-xl mx-auto mb-6 sm:mb-8">
             <div className="relative">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground sm:w-[18px] sm:h-[18px]" />
@@ -239,7 +233,6 @@ export default function Demo() {
             </div>
           </div>
 
-          {/* Filter Buttons */}
           {projects.length > 0 && (
             <div className="flex flex-wrap items-center justify-center gap-2 mb-6 sm:mb-8 md:mb-12">
               <Filter size={16} className="text-muted-foreground hidden sm:block" />
@@ -276,20 +269,20 @@ export default function Demo() {
                 <Briefcase size={40} className="text-primary-foreground" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
-                {searchQuery ? "No Matching Projects" : "Projects Coming Soon"}
+                {searchQuery ? t("demo.no_match") : t("demo.no_demos")}
               </h3>
               <p className="text-muted-foreground mb-6">
                 {searchQuery 
-                  ? "Try adjusting your search or browse all projects."
-                  : "We're preparing our project showcase. Check back soon or contact us for a personalized demo."}
+                  ? t("demo.no_match_desc")
+                  : t("demo.custom_desc")}
               </p>
               {searchQuery ? (
                 <Button variant="outline" onClick={() => setSearchQuery("")}>
-                  Clear Search
+                  {t("demo.clear_search")}
                 </Button>
               ) : (
                 <Link to="/contact">
-                  <Button variant="gradient">Request a Demo</Button>
+                  <Button variant="gradient">{t("demo.request_demo")}</Button>
                 </Link>
               )}
             </div>
@@ -306,7 +299,6 @@ export default function Demo() {
                       project.is_featured ? "border-primary/30" : "border-border/50"
                     }`}
                   >
-                    {/* Live Preview or Thumbnail */}
                     {hasLivePreview ? (
                       <LivePreview
                         url={project.demo_url!}
@@ -322,10 +314,11 @@ export default function Demo() {
                           src={project.thumbnail}
                           alt={project.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
                         />
                         {project.is_featured && (
                           <span className="absolute top-3 left-3 px-2 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                            Featured
+                            {t("demo.featured")}
                           </span>
                         )}
                         {project.demo_url && (
@@ -335,7 +328,7 @@ export default function Demo() {
                               variant="gradient"
                               onClick={() => handleExpand(project)}
                             >
-                              View Demo
+                              {t("demo.view_demo")}
                             </Button>
                             <Button
                               size="sm"
@@ -353,7 +346,7 @@ export default function Demo() {
                         <TypeIcon size={48} className="text-primary/50" />
                         {project.is_featured && (
                           <span className="absolute top-3 left-3 px-2 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                            Featured
+                            {t("demo.featured")}
                           </span>
                         )}
                       </div>
@@ -371,7 +364,7 @@ export default function Demo() {
                         </div>
                         {project.view_count !== null && project.view_count > 0 && (
                           <span className="text-xs text-muted-foreground">
-                            {project.view_count} views
+                            {project.view_count} {t("demo.views")}
                           </span>
                         )}
                       </div>
@@ -412,7 +405,7 @@ export default function Demo() {
                             onClick={() => handleExpand(project)}
                             className="flex-1"
                           >
-                            View Demo
+                            {t("demo.view_demo")}
                           </Button>
                         )}
                         <Button
@@ -422,7 +415,7 @@ export default function Demo() {
                           className="gap-1"
                         >
                           <MessageCircle size={14} />
-                          Quote
+                          {t("demo.quote")}
                         </Button>
                       </div>
                     </div>
@@ -440,14 +433,14 @@ export default function Demo() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center bg-gradient-card rounded-xl sm:rounded-2xl md:rounded-3xl border border-border/50 p-5 sm:p-6 md:p-8 lg:p-12">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-2 sm:mb-3 md:mb-4">
-              Want a Custom Solution?
+              {t("demo.custom_title")}
             </h2>
             <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-6 md:mb-8 max-w-lg mx-auto">
-              Schedule a personalized consultation tailored to your specific requirements.
+              {t("demo.custom_desc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="gradient" size="default" className="gap-2 h-10 sm:h-11 text-sm sm:text-base" onClick={handleConsultation}>
-                Schedule Consultation
+                {t("demo.schedule")}
               </Button>
               <Button 
                 variant="outline" 
@@ -459,7 +452,7 @@ export default function Demo() {
                 }}
               >
                 <MessageCircle size={16} />
-                Chat on WhatsApp
+                {t("demo.chat_whatsapp")}
               </Button>
             </div>
           </div>
