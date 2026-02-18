@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { useRef, ReactNode, forwardRef } from "react";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -55,33 +55,33 @@ interface StaggerContainerProps {
   staggerDelay?: number;
 }
 
-export function StaggerContainer({
-  children,
-  className = "",
-  staggerDelay = 0.1,
-}: StaggerContainerProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+export const StaggerContainer = forwardRef<HTMLDivElement, StaggerContainerProps>(
+  ({ children, className = "", staggerDelay = 0.1 }, forwardedRef) => {
+    const internalRef = useRef<HTMLDivElement>(null);
+    const ref = (forwardedRef as React.RefObject<HTMLDivElement>) || internalRef;
+    const isInView = useInView(ref, { once: true, margin: "-50px" });
 
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: staggerDelay,
+    return (
+      <motion.div
+        ref={ref}
+        className={className}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: staggerDelay,
+            },
           },
-        },
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+        }}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+);
+StaggerContainer.displayName = "StaggerContainer";
 
 // Individual stagger item
 interface StaggerItemProps {
@@ -89,23 +89,27 @@ interface StaggerItemProps {
   className?: string;
 }
 
-export function StaggerItem({ children, className = "" }: StaggerItemProps) {
-  return (
-    <motion.div
-      className={className}
-      variants={{
-        hidden: { opacity: 0, y: 30 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 0.5,
-            ease: [0.25, 0.46, 0.45, 0.94],
+export const StaggerItem = forwardRef<HTMLDivElement, StaggerItemProps>(
+  ({ children, className = "" }, ref) => {
+    return (
+      <motion.div
+        ref={ref}
+        className={className}
+        variants={{
+          hidden: { opacity: 0, y: 30 },
+          visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+              duration: 0.5,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            },
           },
-        },
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+        }}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+);
+StaggerItem.displayName = "StaggerItem";

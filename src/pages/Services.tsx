@@ -18,33 +18,33 @@ const services = [
   {
     id: "enterprise", icon: Building2, titleKey: "services.enterprise", descKey: "services.enterprise_desc", image: websiteMobileApp,
     features: [
-      { icon: Users, title: "HRM System", description: "Complete human resource management with payroll, attendance, leave management, and performance tracking." },
-      { icon: BarChart3, title: "CRM System", description: "Customer relationship management to boost sales, track leads, and improve customer retention." },
-      { icon: Layers, title: "ERP System", description: "Enterprise resource planning for seamless business operations across all departments." },
+      { icon: Users, titleKey: "services.feat_hrm", descKey: "services.feat_hrm_desc" },
+      { icon: BarChart3, titleKey: "services.feat_crm", descKey: "services.feat_crm_desc" },
+      { icon: Layers, titleKey: "services.feat_erp", descKey: "services.feat_erp_desc" },
     ],
   },
   {
     id: "custom", icon: Code2, titleKey: "services.custom", descKey: "services.custom_desc", image: ecommerceWebsite,
     features: [
-      { icon: Globe, title: "Web Applications", description: "Modern, responsive web applications using React, Next.js, and other cutting-edge technologies." },
-      { icon: Smartphone, title: "Mobile Apps", description: "Native and cross-platform mobile applications for iOS and Android platforms." },
-      { icon: Database, title: "API Development", description: "Robust RESTful and GraphQL APIs for seamless integration with existing systems." },
+      { icon: Globe, titleKey: "services.feat_web", descKey: "services.feat_web_desc" },
+      { icon: Smartphone, titleKey: "services.feat_mobile", descKey: "services.feat_mobile_desc" },
+      { icon: Database, titleKey: "services.feat_api", descKey: "services.feat_api_desc" },
     ],
   },
   {
     id: "security", icon: Shield, titleKey: "services.security", descKey: "services.security_desc", image: bankingApp,
     features: [
-      { icon: Lock, title: "Payment Systems", description: "Secure payment gateways, transaction processing, and financial management tools." },
-      { icon: Building2, title: "Banking Solutions", description: "Core banking systems, mobile banking apps, and financial reporting platforms." },
-      { icon: Shield, title: "Compliance Tools", description: "Regulatory compliance management and audit trail systems for various industries." },
+      { icon: Lock, titleKey: "services.feat_payment", descKey: "services.feat_payment_desc" },
+      { icon: Building2, titleKey: "services.feat_banking", descKey: "services.feat_banking_desc" },
+      { icon: Shield, titleKey: "services.feat_compliance", descKey: "services.feat_compliance_desc" },
     ],
   },
   {
     id: "ai", icon: Brain, titleKey: "services.ai", descKey: "services.ai_desc", image: aiAutomation,
     features: [
-      { icon: Brain, title: "Machine Learning", description: "Custom ML models for predictive analytics, recommendation systems, and automation." },
-      { icon: BarChart3, title: "Data Analytics", description: "AI-powered business intelligence, data visualization, and reporting dashboards." },
-      { icon: Code2, title: "Chatbots & NLP", description: "Intelligent chatbots, voice assistants, and natural language processing solutions." },
+      { icon: Brain, titleKey: "services.feat_ml", descKey: "services.feat_ml_desc" },
+      { icon: BarChart3, titleKey: "services.feat_analytics", descKey: "services.feat_analytics_desc" },
+      { icon: Code2, titleKey: "services.feat_chatbot", descKey: "services.feat_chatbot_desc" },
     ],
   },
 ];
@@ -76,7 +76,7 @@ export default function Services() {
         metadata: { service_title: t(service.titleKey), fingerprint, timestamp: new Date().toISOString() },
       });
     } catch (error) { console.log('Tracking error:', error); }
-    const message = `Hi! I'm interested in your ${t(service.titleKey)} services. I'd like to discuss how you can help my business with:\n\n${service.features.map(f => `• ${f.title}`).join('\n')}\n\nPlease contact me for more details.`;
+    const message = `Hi! I'm interested in your ${t(service.titleKey)} services. I'd like to discuss how you can help my business with:\n\n${service.features.map(f => `• ${t(f.titleKey)}`).join('\n')}\n\nPlease contact me for more details.`;
     window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
@@ -146,8 +146,8 @@ export default function Services() {
                           <feature.icon size={24} className="text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
-                          <p className="text-muted-foreground text-sm">{feature.description}</p>
+                          <h3 className="text-lg font-semibold text-foreground mb-2">{t(feature.titleKey)}</h3>
+                          <p className="text-muted-foreground text-sm">{t(feature.descKey)}</p>
                         </div>
                       </div>
                     </div>
