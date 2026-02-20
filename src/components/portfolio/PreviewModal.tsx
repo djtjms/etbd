@@ -82,7 +82,7 @@ export function PreviewModal({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent 
-        className="max-w-[98vw] sm:max-w-[95vw] w-full h-[95vh] sm:h-[90vh] p-0 gap-0 bg-background"
+        className="max-w-[100vw] sm:max-w-[98vw] md:max-w-[95vw] w-full h-[100dvh] sm:h-[95vh] md:h-[90vh] p-0 gap-0 bg-background"
         onPointerDownOutside={(e) => {
           e.preventDefault();
           onClose();
