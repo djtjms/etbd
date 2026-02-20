@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import { X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import chatbotIcon from "@/assets/chatbot-icon.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -54,23 +55,23 @@ export function Chatbot() {
 
   return (
     <>
-      {/* Chat Button */}
+      {/* Chat Button - Custom PNG icon */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-primary shadow-primary flex items-center justify-center transition-all hover:scale-110 ${isOpen ? "hidden" : ""}`}
+        className={`fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 w-12 h-12 md:w-14 md:h-14 rounded-full shadow-primary-lg flex items-center justify-center transition-all hover:scale-110 overflow-hidden bg-primary ${isOpen ? "hidden" : ""}`}
         aria-label="Open chat"
       >
-        <MessageCircle size={24} className="text-primary-foreground" />
+        <img src={chatbotIcon} alt="Chat" className="w-9 h-9 md:w-10 md:h-10 object-contain" />
       </button>
 
       {/* Chat Window */}
       {isOpen && (
         <div className="fixed bottom-0 right-0 md:bottom-6 md:right-6 z-50 w-full md:w-96 h-[100dvh] md:h-[500px] bg-card border-l md:border border-border md:rounded-2xl shadow-2xl flex flex-col animate-scale-in">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border shrink-0">
+          <div className="flex items-center justify-between p-3 md:p-4 border-b border-border shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">e</span>
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary flex items-center justify-center overflow-hidden">
+                <img src={chatbotIcon} alt="Bot" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground text-sm">engineersTech</h3>
@@ -87,10 +88,10 @@ export function Chatbot() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                <div className={`max-w-[85%] px-3 md:px-4 py-2 md:py-2.5 rounded-2xl text-sm leading-relaxed ${
                   msg.role === "user" 
                     ? "bg-primary text-primary-foreground rounded-br-md" 
                     : "bg-secondary text-foreground rounded-bl-md"
@@ -114,14 +115,14 @@ export function Chatbot() {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-border shrink-0">
+          <div className="p-3 md:p-4 border-t border-border shrink-0">
             <div className="flex gap-2">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                 placeholder="Type a message..."
-                className="bg-secondary border-border"
+                className="bg-secondary border-border text-sm"
                 disabled={loading}
               />
               <Button 
@@ -129,6 +130,7 @@ export function Chatbot() {
                 size="icon" 
                 variant="gradient" 
                 disabled={loading || !input.trim()}
+                className="shrink-0"
               >
                 <Send size={18} />
               </Button>
