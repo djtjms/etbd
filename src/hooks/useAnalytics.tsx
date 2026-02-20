@@ -92,7 +92,6 @@ export function useAnalytics() {
       await supabase.from("interaction_events").insert(
         events.map((event) => ({
           session_id: sessionId.current,
-          fingerprint: fingerprint.current,
           ...event,
         }))
       );
@@ -127,7 +126,6 @@ export function useAnalytics() {
     try {
       await supabase.from("visitor_analytics").insert({
         session_id: sessionId.current,
-        fingerprint: fingerprint.current,
         page_path: location.pathname,
         device_type: getDeviceType(),
         referrer: document.referrer || null,

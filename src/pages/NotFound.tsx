@@ -3,18 +3,20 @@ import { useEffect } from "react";
 import { Home, ArrowLeft, FileQuestion } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "Portfolio", href: "/portfolio" },
-  { label: "Blog", href: "/blog" },
-  { label: "About Us", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { labelKey: "nav.home", href: "/" },
+  { labelKey: "nav.services", href: "/services" },
+  { labelKey: "nav.portfolio", href: "/portfolio" },
+  { labelKey: "nav.blog", href: "/blog" },
+  { labelKey: "nav.about", href: "/about" },
+  { labelKey: "nav.contact", href: "/contact" },
 ];
 
 const NotFound = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
@@ -28,7 +30,6 @@ const NotFound = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl mx-auto text-center">
-            {/* 404 Icon */}
             <div className="mb-8 animate-fade-in">
               <div className="w-24 h-24 mx-auto rounded-3xl bg-gradient-primary flex items-center justify-center mb-6 shadow-primary">
                 <FileQuestion size={48} className="text-primary-foreground" />
@@ -37,22 +38,21 @@ const NotFound = () => {
             </div>
             
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-              Page Not Found
+              {t("notfound.title")}
             </h1>
             
             <p className="text-lg text-muted-foreground mb-2 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Sorry, the page you're looking for doesn't exist or has been moved.
+              {t("notfound.desc")}
             </p>
             <p className="text-sm text-muted-foreground/60 mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Attempted path: <code className="bg-secondary px-2 py-1 rounded text-primary">{location.pathname}</code>
+              <code className="bg-secondary px-2 py-1 rounded text-primary">{location.pathname}</code>
             </p>
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <Link to="/">
                 <Button variant="gradient" size="lg" className="gap-2 w-full sm:w-auto shadow-primary">
                   <Home size={18} />
-                  Go to Homepage
+                  {t("notfound.home")}
                 </Button>
               </Link>
               <Button 
@@ -62,13 +62,12 @@ const NotFound = () => {
                 onClick={() => window.history.back()}
               >
                 <ArrowLeft size={18} />
-                Go Back
+                {t("notfound.back")}
               </Button>
             </div>
 
-            {/* Quick Links */}
             <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
-              <p className="text-sm text-muted-foreground mb-4">Maybe you were looking for:</p>
+              <p className="text-sm text-muted-foreground mb-4">{t("notfound.looking_for")}</p>
               <div className="flex flex-wrap justify-center gap-3">
                 {quickLinks.map((link) => (
                   <Link
@@ -76,7 +75,7 @@ const NotFound = () => {
                     to={link.href}
                     className="px-4 py-2 bg-secondary rounded-lg text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-all"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 ))}
               </div>

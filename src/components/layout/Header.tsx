@@ -57,9 +57,9 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 min-w-0 flex-shrink-0 group">
             {logoUrl ? (
-              <img src={logoUrl} alt="engineersTech" className="h-8 sm:h-9 object-contain flex-shrink-0" />
+              <img src={logoUrl} alt="engineersTech" className="h-9 sm:h-10 md:h-11 object-contain flex-shrink-0" />
             ) : (
-              <img src={engineersLogo} alt="engineersTech" className="h-7 sm:h-8 object-contain flex-shrink-0" />
+              <img src={engineersLogo} alt="engineersTech" className="h-8 sm:h-9 md:h-10 object-contain flex-shrink-0" />
             )}
           </Link>
 

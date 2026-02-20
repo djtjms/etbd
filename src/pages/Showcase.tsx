@@ -7,6 +7,7 @@ import { ConsultationPopup } from "@/components/consultation/ConsultationPopup";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface DemoProject {
   id: string;
@@ -27,6 +28,7 @@ export default function Showcase() {
   const [error, setError] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     async function fetchProject() {
@@ -92,19 +94,7 @@ export default function Showcase() {
         },
       });
 
-      // Increment view count directly
-      const { data: currentData } = await supabase
-        .from("demo_projects")
-        .select("view_count")
-        .eq("id", proj.id)
-        .single();
-      
-      if (currentData) {
-        await supabase
-          .from("demo_projects")
-          .update({ view_count: (currentData.view_count || 0) + 1 })
-          .eq("id", proj.id);
-      }
+      // View count is tracked via interaction_events above
     } catch (e) {
       console.log("Tracking error:", e);
     }
@@ -122,7 +112,7 @@ export default function Showcase() {
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading project...</p>
+            <p className="text-muted-foreground">{t("showcase.loading")}</p>
           </div>
         </div>
       </Layout>
@@ -132,20 +122,15 @@ export default function Showcase() {
   if (error || !project) {
     return (
       <Layout>
-        <SEOHead
-          title="Project Not Found"
-          description="The requested project could not be found."
-        />
+        <SEOHead title={t("showcase.not_found")} description={t("showcase.not_found_desc")} />
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center max-w-md">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              Project Not Found
-            </h1>
+            <h1 className="text-2xl font-bold text-foreground mb-4">{t("showcase.not_found")}</h1>
             <p className="text-muted-foreground mb-6">
-              {error || "The project you're looking for doesn't exist or has been removed."}
+              {error || t("showcase.not_found_desc")}
             </p>
             <Button variant="gradient" onClick={() => navigate("/demo")}>
-              Browse All Projects
+              {t("showcase.browse")}
             </Button>
           </div>
         </div>
@@ -164,7 +149,7 @@ export default function Showcase() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Opening {project.title}...</p>
+          <p className="text-muted-foreground">{t("showcase.opening")} {project.title}...</p>
         </div>
       </div>
 
