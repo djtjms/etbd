@@ -13,7 +13,7 @@ export function Footer() {
   const logoUrl = branding?.logo_url;
   const tagline = branding?.tagline || "Enterprise Tech Solutions for the Future. We deliver cutting-edge software solutions that transform businesses.";
   const email = branding?.company_email || "info@engineerstechbd.com";
-  const phone = branding?.company_phone || "+880 1234-567890";
+  const phone = branding?.company_phone || "+880-1873722228";
   const address = branding?.company_address || "Dhaka, Bangladesh";
 
   const socialLinks = [
