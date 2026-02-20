@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBranding } from "@/hooks/useBranding";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface ConsultationPopupProps {
   isOpen: boolean;
@@ -29,9 +30,9 @@ export function ConsultationPopup({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { branding } = useBranding();
+  const { t } = useLanguage();
 
-  // Fallback WhatsApp number if branding fails
-  const whatsappNumber = branding?.whatsapp_number || "+8801873722228";
+  const whatsappNumber = branding?.whatsapp_number || "+880-1873722228";
   const cleanNumber = whatsappNumber.replace(/[^0-9]/g, "");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,8 +52,8 @@ export function ConsultationPopup({
       if (error) throw error;
 
       toast({
-        title: "Request Submitted!",
-        description: "We'll get back to you within 24 hours.",
+        title: t("consultation.success"),
+        description: t("consultation.success_desc"),
       });
 
       onClose();
@@ -63,8 +64,8 @@ export function ConsultationPopup({
     } catch (error) {
       console.error("Error submitting consultation:", error);
       toast({
-        title: "Error",
-        description: "Failed to submit. Please try again or contact us directly.",
+        title: t("consultation.error"),
+        description: t("consultation.error_desc"),
         variant: "destructive",
       });
     } finally {
@@ -80,11 +81,8 @@ export function ConsultationPopup({
     onClose();
   };
 
-  // Safe close handler that always works
   const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      onClose();
-    }
+    if (!open) onClose();
   };
 
   return (
@@ -93,85 +91,54 @@ export function ConsultationPopup({
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-primary" />
-            Get Free Consultation
+            {t("consultation.title")}
           </DialogTitle>
         </DialogHeader>
 
         {projectContext && (
           <p className="text-sm text-muted-foreground">
-            Interested in: <span className="text-primary font-medium">{projectContext}</span>
+            {t("consultation.interested_in")}: <span className="text-primary font-medium">{projectContext}</span>
           </p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
-              required
-            />
+            <Label htmlFor="name">{t("consultation.name")} *</Label>
+            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("contact.name")} required />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              required
-            />
+            <Label htmlFor="email">{t("consultation.email")} *</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+880 1234-567890"
-            />
+            <Label htmlFor="phone">{t("consultation.phone")}</Label>
+            <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+880 1234-567890" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message">Message</Label>
-            <Textarea
-              id="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Tell us about your project..."
-              rows={3}
-            />
+            <Label htmlFor="message">{t("consultation.message")}</Label>
+            <Textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t("contact.message_placeholder")} rows={3} />
           </div>
 
           <div className="flex flex-col gap-3 pt-2">
             <Button type="submit" disabled={isSubmitting} className="w-full gap-2">
               <Send className="w-4 h-4" />
-              {isSubmitting ? "Submitting..." : "Submit Request"}
+              {isSubmitting ? t("consultation.submitting") : t("consultation.submit")}
             </Button>
             
             <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border" />
-              </div>
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">or</span>
+                <span className="bg-background px-2 text-muted-foreground">{t("consultation.or")}</span>
               </div>
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleWhatsApp}
-              className="w-full gap-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-            >
+            <Button type="button" variant="outline" onClick={handleWhatsApp}
+              className="w-full gap-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white">
               <Phone className="w-4 h-4" />
-              Chat on WhatsApp
+              {t("consultation.whatsapp")}
             </Button>
           </div>
         </form>

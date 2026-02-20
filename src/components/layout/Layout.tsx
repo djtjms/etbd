@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Chatbot } from "@/components/chatbot/Chatbot";
-import { WhatsAppButton } from "@/components/consultation/WhatsAppButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,7 +16,6 @@ export function Layout({ children, showChatbot = true }: LayoutProps) {
         {children}
       </main>
       <Footer />
-      <WhatsAppButton />
       {showChatbot && <Chatbot />}
     </div>
   );
