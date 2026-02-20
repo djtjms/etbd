@@ -44,7 +44,7 @@ export function Chatbot() {
     } catch (error) {
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "I'm having trouble connecting right now. Please contact us at info@engineerstechbd.com for assistance." 
+        content: "I'm having trouble connecting right now. Please contact us at +880-1873722228 or info@engineerstechbd.com for assistance." 
       }]);
     } finally {
       setLoading(false);
