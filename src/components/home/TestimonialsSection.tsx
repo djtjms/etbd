@@ -121,10 +121,8 @@ export function TestimonialsSection() {
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto" staggerDelay={0.15}>
           {testimonials.map((testimonial, index) => (
             <StaggerItem key={testimonial.id}>
-              <motion.div
-                className="relative bg-gradient-card rounded-3xl border border-border/50 p-8 lg:p-10 hover:border-primary/50 transition-all duration-500 group h-full"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.3 }}
+              <div
+                className="relative bg-gradient-card rounded-3xl border border-border/50 p-8 lg:p-10 hover:border-primary/50 hover:-translate-y-1 transition-all duration-500 group h-full"
               >
               {/* Quote Icon */}
               <div className="absolute top-8 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -177,7 +175,7 @@ export function TestimonialsSection() {
                   </p>
                 </div>
               </div>
-              </motion.div>
+              </div>
             </StaggerItem>
           ))}
         </StaggerContainer>
