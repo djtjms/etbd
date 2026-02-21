@@ -181,13 +181,11 @@ export function ServicesSection() {
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto" staggerDelay={0.15}>
           {services.map((service, index) => (
             <StaggerItem key={service.id}>
-              <motion.div
+              <div
                 className={cn(
-                  "group relative bg-gradient-card rounded-3xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/50",
+                  "group relative bg-gradient-card rounded-3xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/50 hover:-translate-y-1",
                   expandedService === service.id && "border-primary/50 ring-1 ring-primary/20"
                 )}
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.3 }}
               >
               {/* Service Image */}
               <div className="relative aspect-[16/10] overflow-hidden cursor-pointer" onClick={() => handleServiceClick(service)}>
@@ -259,7 +257,7 @@ export function ServicesSection() {
                   </div>
                 </div>
               </div>
-              </motion.div>
+              </div>
             </StaggerItem>
           ))}
         </StaggerContainer>

@@ -152,20 +152,18 @@ export function ContactSection() {
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto mb-16" staggerDelay={0.1}>
           {contactCards.map((card, index) => (
             <StaggerItem key={index}>
-              <motion.a
+              <a
                 href={card.href}
                 target={card.href.startsWith("http") ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className="group relative bg-gradient-card rounded-2xl border border-border/50 p-7 text-center hover:border-primary/50 transition-all duration-500 block h-full"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.2 }}
+                className="group relative bg-gradient-card rounded-2xl border border-border/50 p-7 text-center hover:border-primary/50 hover:-translate-y-1 transition-all duration-500 block h-full"
               >
               <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mx-auto mb-5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
                 <card.icon size={28} className="text-white" />
               </div>
               <h3 className="text-foreground font-bold text-lg mb-2">{card.title}</h3>
               <p className="text-muted-foreground text-sm group-hover:text-foreground transition-colors">{card.value}</p>
-              </motion.a>
+              </a>
             </StaggerItem>
           ))}
         </StaggerContainer>
