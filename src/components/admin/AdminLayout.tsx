@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useBranding } from "@/hooks/useBranding";
 import { cn } from "@/lib/utils";
+import engineersLogo from "@/assets/engineersTech-logo-white.svg";
 
 const sidebarLinks = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
@@ -74,9 +75,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {logoUrl ? (
                 <img src={logoUrl} alt={logoText} className="w-10 h-10 rounded-lg object-contain" />
               ) : (
-                <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-xl">e</span>
-                </div>
+                <img src={engineersLogo} alt="engineersTech" className="h-8 object-contain" />
               )}
               <span className="text-lg font-bold text-foreground truncate max-w-[120px]">
                 {logoText.includes("Tech") ? (
