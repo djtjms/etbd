@@ -96,7 +96,7 @@ export function useAnalytics() {
         }))
       );
     } catch (error) {
-      console.error("Failed to log interaction events:", error);
+      if (import.meta.env.DEV) console.error("Failed to log interaction events:", error);
     }
   }, [canTrack]);
 
@@ -131,7 +131,7 @@ export function useAnalytics() {
         referrer: document.referrer || null,
       });
     } catch (error) {
-      console.error("Failed to log page view:", error);
+      if (import.meta.env.DEV) console.error("Failed to log page view:", error);
     }
   }, [canTrack, location.pathname]);
 
@@ -183,7 +183,7 @@ export function useAnalytics() {
         .order("created_at", { ascending: false })
         .limit(1);
     } catch (error) {
-      console.error("Failed to update page analytics:", error);
+      if (import.meta.env.DEV) console.error("Failed to update page analytics:", error);
     }
   }, [canTrack, location.pathname]);
 

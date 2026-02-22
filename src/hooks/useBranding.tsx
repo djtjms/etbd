@@ -66,7 +66,7 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
         setBranding(data);
       }
     } catch (error) {
-      console.error("Failed to fetch branding:", error);
+      if (import.meta.env.DEV) console.error("Failed to fetch branding:", error);
     } finally {
       setLoading(false);
     }

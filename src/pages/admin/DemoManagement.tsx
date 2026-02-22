@@ -703,10 +703,10 @@ My Project,https://example.com,website,"React, Node.js",admin,demo123`}
                               <p><span className="text-muted-foreground">Username:</span> <span className="text-foreground font-mono">{creds.access_username}</span></p>
                             )}
                             {creds?.access_password && (
-                              <p><span className="text-muted-foreground">Password:</span> <span className="text-foreground font-mono">{creds.access_password}</span></p>
+                              <p><span className="text-muted-foreground">Password:</span> <span className="text-foreground font-mono">••••••••</span></p>
                             )}
                             {creds?.access_code && (
-                              <p><span className="text-muted-foreground">Code:</span> <span className="text-foreground font-mono">{creds.access_code}</span></p>
+                              <p><span className="text-muted-foreground">Code:</span> <span className="text-foreground font-mono">••••••</span></p>
                             )}
                           </div>
                         );

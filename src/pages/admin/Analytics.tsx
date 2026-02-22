@@ -136,7 +136,7 @@ export default function Analytics() {
         topCategories,
       });
     } catch (error) {
-      console.error("Failed to fetch analytics:", error);
+      if (import.meta.env.DEV) console.error("Failed to fetch analytics:", error);
     } finally {
       setLoading(false);
     }

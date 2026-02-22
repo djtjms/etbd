@@ -62,7 +62,7 @@ export function ConsultationPopup({
       setPhone("");
       setMessage("");
     } catch (error) {
-      console.error("Error submitting consultation:", error);
+      if (import.meta.env.DEV) console.error("Error submitting consultation:", error);
       toast({
         title: t("consultation.error"),
         description: t("consultation.error_desc"),
