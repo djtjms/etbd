@@ -19,7 +19,7 @@ const NotFound = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    if (import.meta.env.DEV) console.error("404 Error:", location.pathname);
   }, [location.pathname]);
 
   return (

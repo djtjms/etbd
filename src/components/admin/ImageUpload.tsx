@@ -47,7 +47,7 @@ export function ImageUpload({ value, onChange, folder = "images", className = ""
       onChange(publicUrl);
       toast({ title: "Success", description: "Image uploaded successfully" });
     } catch (error) {
-      console.error("Upload error:", error);
+      if (import.meta.env.DEV) console.error("Upload error:", error);
       toast({
         title: "Upload Failed",
         description: error instanceof Error ? error.message : "Failed to upload image",

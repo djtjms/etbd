@@ -96,7 +96,7 @@ Target keywords: software development Bangladesh, ${topic.toLowerCase()}`,
       setGeneratedContent(data.content || "Content generation failed. Please try again.");
       toast.success("Content generated successfully!");
     } catch (error) {
-      console.error("Error generating content:", error);
+      if (import.meta.env.DEV) console.error("Error generating content:", error);
       toast.error("Failed to generate content");
     } finally {
       setGenerating(false);

@@ -45,7 +45,7 @@ export function GalleryUpload({
       .upload(fileName, file);
 
     if (uploadError) {
-      console.error("Upload error:", uploadError);
+      if (import.meta.env.DEV) console.error("Upload error:", uploadError);
       return null;
     }
 
