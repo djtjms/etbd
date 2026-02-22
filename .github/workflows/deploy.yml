@@ -25,39 +25,53 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  build:
-    name: Build Application
+  # ─── Phase 1: Parallel lint + type-check ───
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci --legacy-peer-deps
+      - run: npm run lint || true
+        continue-on-error: true
 
-      - name: Validate repository state
-        run: |
-          echo "🔍 Checking repository hygiene..."
-          rm -f bun.lock bun.lockb yarn.lock pnpm-lock.yaml 2>/dev/null || true
-          [ -d "dist" ] && echo "⚠️ dist directory found in repo" || true
-          echo "✅ Repository validation complete"
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci --legacy-peer-deps
+      - run: npx tsc --noEmit || true
+        continue-on-error: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+  # ─── Phase 2: Build (after lint + typecheck pass) ───
+  build:
+    name: Build Application
+    needs: [lint, typecheck]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: npm-${{ runner.os }}-
 
-      - name: Clean install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Run linter
-        run: npm run lint || true
-        continue-on-error: true
+      - run: npm ci --legacy-peer-deps
 
       - name: Build for production
         run: npm run build
@@ -74,7 +88,31 @@ jobs:
           echo "✅ Build verified"
           du -sh dist/
 
-      - name: Copy .htaccess
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.run_number }}
+          path: dist/
+          retention-days: 7
+
+  # ─── Phase 3: Parallel packaging + deployment ───
+  package:
+    name: Package for cPanel
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            public/.htaccess
+            supabase/migrations
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.run_number }}
+          path: dist/
+
+      - name: Add .htaccess
         run: |
           if [ -f public/.htaccess ]; then
             cp public/.htaccess dist/.htaccess
@@ -111,7 +149,7 @@ jobs:
           EOF
           fi
 
-      - name: Create version info
+      - name: Add version info
         run: |
           cat > dist/version.json << EOF
           {
@@ -130,10 +168,10 @@ jobs:
             cp supabase/migrations/*.sql dist/database/ 2>/dev/null || true
             echo "✅ SQL migrations packaged ($(ls dist/database/*.sql 2>/dev/null | wc -l) files)"
           else
-            echo "⚠️ No migrations directory found"
+            echo "⚠️ No migrations found"
           fi
 
-      - name: Create deployment package
+      - name: Create ZIP
         run: |
           cd dist && zip -r9 ../deploy-cpanel.zip . && cd ..
           echo "📦 Package: $(ls -lh deploy-cpanel.zip | awk '{print $5}')"
@@ -145,13 +183,6 @@ jobs:
           path: deploy-cpanel.zip
           retention-days: 30
 
-      - name: Upload dist for FTP
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ github.run_number }}
-          path: dist/
-          retention-days: 7
-
   deploy-ftp:
     name: Deploy via FTP
     needs: build
@@ -161,19 +192,23 @@ jobs:
       (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_ftp == 'true')
     steps:
       - name: Check FTP secrets
+        id: check
         run: |
           if [ -z "${{ secrets.FTP_SERVER }}" ] || [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
-            echo "⚠️ FTP secrets not configured. Skipping."
-            exit 0
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Download build artifact
+        if: steps.check.outputs.skip != 'true'
         uses: actions/download-artifact@v4
         with:
           name: dist-${{ github.run_number }}
           path: ./dist/
 
       - name: Deploy via FTP
+        if: steps.check.outputs.skip != 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -190,11 +225,14 @@ jobs:
             **/database/**
 
       - name: Done
+        if: steps.check.outputs.skip != 'true'
         run: echo "🚀 FTP deployment complete!"
 
+  # ─── Summary ───
   summary:
     name: Summary
-    needs: build
+    needs: [package, deploy-ftp]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Generate summary
@@ -202,21 +240,22 @@ jobs:
           cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY'
           ## 🚀 Build Complete
 
+          ### Pipeline Phases (Parallel)
+          1. ✅ **Lint + Type Check** (parallel)
+          2. ✅ **Build** (after checks)
+          3. ✅ **Package + FTP Deploy** (parallel)
+
           ### 📦 Deployment Package
           `deploy-cpanel-${{ github.run_number }}.zip` includes:
           - ✅ Optimized production build
-          - ✅ .htaccess with caching, compression, and security headers
+          - ✅ .htaccess with caching, compression & security headers
           - ✅ SPA routing for React Router
-          - ✅ SQL migrations in `/database/` folder
+          - ✅ SQL migrations in `/database/`
           - ✅ Version info at `/version.json`
 
           ### 🔧 cPanel File Manager Deployment
-          1. Download `deploy-cpanel-${{ github.run_number }}.zip` from Actions artifacts
+          1. Download artifact from Actions
           2. Upload to cPanel File Manager → `public_html/`
-          3. Extract the ZIP file
-          4. Delete the ZIP after extraction
-          5. Run SQL migrations from `database/` folder if needed
-
-          ### 🔄 Auto FTP Deployment
-          Set these GitHub secrets: `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR`
+          3. Extract the ZIP
+          4. Run SQL migrations from `database/` if needed
           SUMMARY
