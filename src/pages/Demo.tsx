@@ -19,6 +19,7 @@ interface DemoProject {
   project_type: string;
   demo_url: string | null;
   thumbnail: string | null;
+  screenshots: string[] | null;
   technologies: string[] | null;
   is_featured: boolean;
   preview_mode: string | null;
@@ -85,7 +86,7 @@ export default function Demo() {
     async function fetchProjects() {
       const { data, error } = await supabase
         .from("demo_projects")
-        .select("id, title, description, project_type, demo_url, thumbnail, technologies, is_featured, preview_mode, allow_interaction, view_count")
+        .select("id, title, description, project_type, demo_url, thumbnail, screenshots, technologies, is_featured, preview_mode, allow_interaction, view_count")
         .eq("status", "published")
         .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false });
@@ -468,6 +469,7 @@ export default function Demo() {
           title={selectedProject.title}
           projectId={selectedProject.id}
           thumbnail={selectedProject.thumbnail}
+          screenshots={selectedProject.screenshots}
           onConsultation={handleConsultation}
         />
       )}
