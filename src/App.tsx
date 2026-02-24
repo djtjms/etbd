@@ -110,30 +110,32 @@ function AnimatedRoutes() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <BrandingProvider>
-        <LanguageProvider>
-          <ConsentProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <ScrollToTop />
-                <InteractionTracker>
-                  <AnimatedRoutes />
-                  <WhatsAppButton />
-                  <CookieConsent />
-                  <ConsultationTrigger />
-                </InteractionTracker>
-              </BrowserRouter>
-            </TooltipProvider>
-          </ConsentProvider>
-        </LanguageProvider>
-      </BrandingProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrandingProvider>
+          <LanguageProvider>
+            <ConsentProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <ScrollToTop />
+                  <InteractionTracker>
+                    <AnimatedRoutes />
+                    <WhatsAppButton />
+                    <CookieConsent />
+                    <ConsultationTrigger />
+                  </InteractionTracker>
+                </BrowserRouter>
+              </TooltipProvider>
+            </ConsentProvider>
+          </LanguageProvider>
+        </BrandingProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
