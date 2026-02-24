@@ -51,6 +51,21 @@ export default function ServicesManagement() {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
+  const seedDefaultServices = async () => {
+    const defaults = [
+      { title: "Enterprise Solutions", description: "Comprehensive business management systems tailored for your organization.", icon: "Building2", sort_order: 0, is_active: true, features: JSON.parse(JSON.stringify([{ icon: "Users", title: "HRM System", description: "Complete human resource management with payroll, attendance, and performance tracking." }, { icon: "BarChart3", title: "CRM System", description: "Customer relationship management to boost sales and improve customer retention." }, { icon: "Layers", title: "ERP System", description: "Enterprise resource planning for seamless business operations across departments." }])) },
+      { title: "Custom Development", description: "Bespoke software solutions built to match your unique business requirements.", icon: "Code2", sort_order: 1, is_active: true, features: JSON.parse(JSON.stringify([{ icon: "Code2", title: "Web Applications", description: "Modern, responsive web applications using cutting-edge technologies." }, { icon: "Layers", title: "Mobile Apps", description: "Native and cross-platform mobile applications for iOS and Android." }, { icon: "BarChart3", title: "API Development", description: "Robust APIs and backend services for seamless integration." }])) },
+      { title: "Security & Finance", description: "Secure financial systems and compliance-ready security solutions.", icon: "Shield", sort_order: 2, is_active: true, features: JSON.parse(JSON.stringify([{ icon: "Shield", title: "Payment Systems", description: "Secure payment gateways and financial transaction processing." }, { icon: "Building2", title: "Banking Solutions", description: "Core banking systems and financial management platforms." }, { icon: "Users", title: "Compliance Tools", description: "Regulatory compliance and audit management systems." }])) },
+      { title: "AI Integration", description: "Leverage artificial intelligence to automate and optimize your business.", icon: "Brain", sort_order: 3, is_active: true, features: JSON.parse(JSON.stringify([{ icon: "Brain", title: "Machine Learning", description: "Custom ML models for predictive analytics and automation." }, { icon: "BarChart3", title: "Data Analytics", description: "AI-powered business intelligence and data visualization." }, { icon: "Code2", title: "Chatbots & NLP", description: "Intelligent chatbots and natural language processing solutions." }])) },
+    ];
+    const { error } = await supabase.from("services").insert(defaults);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Success", description: "Default services imported" });
+      fetchServices();
+    }
+  };
   const fetchServices = async () => {
     const { data, error } = await supabase
       .from("services")
@@ -173,9 +188,15 @@ export default function ServicesManagement() {
         ) : services.length === 0 ? (
           <div className="text-center py-20 bg-gradient-card rounded-2xl border border-border/50">
             <p className="text-muted-foreground text-lg mb-4">No services yet</p>
-            <Button variant="gradient" onClick={openCreate} className="gap-2">
-              <Plus size={18} /> Create First Service
-            </Button>
+            <p className="text-muted-foreground text-sm mb-6">The homepage is showing default fallback services. Add your own to replace them.</p>
+            <div className="flex gap-3 justify-center">
+              <Button variant="gradient" onClick={openCreate} className="gap-2">
+                <Plus size={18} /> Create First Service
+              </Button>
+              <Button variant="outline" onClick={seedDefaultServices} className="gap-2">
+                Import Defaults
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

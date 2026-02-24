@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BrandingData {
@@ -22,6 +22,8 @@ interface BrandingContextType {
   refetch: () => Promise<void>;
 }
 
+const CACHE_KEY = "etbd_branding_cache";
+
 const defaultBranding: BrandingData = {
   id: "",
   logo_url: null,
@@ -31,18 +33,28 @@ const defaultBranding: BrandingData = {
   company_email: "info@engineerstechbd.com",
   company_phone: "+880 1234-567890",
   company_address: "Dhaka, Bangladesh",
-  facebook_url: "https://facebook.com/engineerstechbd",
-  linkedin_url: "https://linkedin.com/company/engineerstechbd",
-  twitter_url: "https://twitter.com/engineerstechbd",
+  facebook_url: null,
+  linkedin_url: null,
+  twitter_url: null,
   whatsapp_number: null,
 };
 
-// Helper to get value with fallback (treats empty string as null)
-const getWithFallback = <T,>(value: T | null | undefined, fallback: T): T => {
-  if (value === null || value === undefined) return fallback;
-  if (typeof value === 'string' && value.trim() === '') return fallback;
-  return value;
-};
+function loadCachedBranding(): BrandingData {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed && parsed.id) return parsed;
+    }
+  } catch {}
+  return defaultBranding;
+}
+
+function saveBrandingCache(data: BrandingData) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch {}
+}
 
 const BrandingContext = createContext<BrandingContextType>({
   branding: defaultBranding,
@@ -51,30 +63,38 @@ const BrandingContext = createContext<BrandingContextType>({
 });
 
 export function BrandingProvider({ children }: { children: ReactNode }) {
-  const [branding, setBranding] = useState<BrandingData | null>(defaultBranding);
+  const [branding, setBranding] = useState<BrandingData>(loadCachedBranding);
   const [loading, setLoading] = useState(true);
 
-  const fetchBranding = async () => {
+  const fetchBranding = useCallback(async (retries = 2) => {
     try {
       const { data, error } = await supabase
         .from("branding_settings")
         .select("*")
+        .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (!error && data) {
         setBranding(data);
+        saveBrandingCache(data);
+      } else if (error && retries > 0) {
+        await new Promise(r => setTimeout(r, 1000));
+        return fetchBranding(retries - 1);
       }
-    } catch (error) {
-      if (import.meta.env.DEV) console.error("Failed to fetch branding:", error);
+    } catch (err) {
+      if (retries > 0) {
+        await new Promise(r => setTimeout(r, 1000));
+        return fetchBranding(retries - 1);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchBranding();
-  }, []);
+  }, [fetchBranding]);
 
   return (
     <BrandingContext.Provider value={{ branding, loading, refetch: fetchBranding }}>

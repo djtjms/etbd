@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -8,6 +8,13 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isAdmin, loading } = useAuth();
+  const [showTimeout, setShowTimeout] = useState(false);
+
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setTimeout(() => setShowTimeout(true), 8000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -16,7 +23,13 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
           <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
             <span className="text-primary-foreground font-bold text-3xl">e</span>
           </div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">
+            {showTimeout ? (
+              <>Still loading… <a href="javascript:location.reload()" className="text-primary underline ml-1">Retry</a></>
+            ) : (
+              "Loading..."
+            )}
+          </p>
         </div>
       </div>
     );

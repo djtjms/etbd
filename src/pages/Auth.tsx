@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/engineersTech-logo-white.svg";
+import { useBranding } from "@/hooks/useBranding";
+import fallbackLogo from "@/assets/engineersTech-logo-white.svg";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
@@ -29,11 +30,14 @@ export default function Auth() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { branding } = useBranding();
+
+  const logoUrl = branding?.logo_url?.trim() || null;
+  const logoText = branding?.logo_text?.trim() || "engineersTech";
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        // Check if user is admin
         checkAdminAndRedirect(session.user.id);
       }
     });
@@ -178,12 +182,13 @@ export default function Auth() {
 
         {/* Auth Card */}
         <div className="bg-gradient-card rounded-2xl border border-border/50 p-8 md:p-10 animate-fade-in">
-          {/* Logo */}
+          {/* Logo - dynamic from branding */}
           <div className="text-center mb-8">
             <img 
-              src={logo} 
-              alt="engineersTech" 
-              className="w-20 h-20 rounded-2xl mx-auto mb-4 shadow-lg"
+              src={logoUrl || fallbackLogo} 
+              alt={logoText}
+              className="w-20 h-20 rounded-2xl mx-auto mb-4 shadow-lg object-contain"
+              onError={(e) => { (e.target as HTMLImageElement).src = fallbackLogo; }}
             />
             <h1 className="text-2xl font-bold text-foreground mb-2">
               {isLogin ? "Admin Login" : "Create Account"}
