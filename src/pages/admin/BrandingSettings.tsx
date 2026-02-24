@@ -65,7 +65,12 @@ export default function BrandingSettings() {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Saved", description: "Branding updated successfully" });
+      // Update localStorage cache immediately for instant reflection
+      try {
+        const cacheData = { ...branding };
+        localStorage.setItem("etbd_branding_cache", JSON.stringify(cacheData));
+      } catch {}
+      toast({ title: "Saved", description: "Branding changes applied across the site" });
       await refetch();
     }
     setSaving(false);

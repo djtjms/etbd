@@ -18,8 +18,6 @@
     <link rel="preload" href="/engineersTech-logo-white.svg" as="image" type="image/svg+xml" />
 
     <!-- Open Graph -->
-    
-    
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://engineerstechbd.com/" />
     <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/mXSePlbSZSdXLDxTdWHTKEiow1Z2/social-images/social-1770180752616-1000052902.jpg">
@@ -29,8 +27,6 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@engineerstechbd" />
-    
-    
     <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/mXSePlbSZSdXLDxTdWHTKEiow1Z2/social-images/social-1770180752616-1000052902.jpg">
     
     <!-- Geo Tags -->
@@ -39,21 +35,31 @@
     <meta name="geo.position" content="23.8103;90.4125" />
     <meta name="ICBM" content="23.8103, 90.4125" />
     <meta property="og:title" content="engineersTech - Leading Software Development Company in Bangladesh | Custom ERP, AI, Web Apps">
-  <meta name="twitter:title" content="engineersTech - Leading Software Development Company in Bangladesh | Custom ERP, AI, Web Apps">
-  <meta property="og:description" content="Top software company in Bangladesh offering custom ERP, HRM, CRM systems, AI integration, and web/mobile app development. Trusted by 30+ businesses. Get a free consultation!">
-  <meta name="twitter:description" content="Top software company in Bangladesh offering custom ERP, HRM, CRM systems, AI integration, and web/mobile app development. Trusted by 30+ businesses. Get a free consultation!">
-</head>
+    <meta name="twitter:title" content="engineersTech - Leading Software Development Company in Bangladesh | Custom ERP, AI, Web Apps">
+    <meta property="og:description" content="Top software company in Bangladesh offering custom ERP, HRM, CRM systems, AI integration, and web/mobile app development. Trusted by 30+ businesses. Get a free consultation!">
+    <meta name="twitter:description" content="Top software company in Bangladesh offering custom ERP, HRM, CRM systems, AI integration, and web/mobile app development. Trusted by 30+ businesses. Get a free consultation!">
+  </head>
 
   <body class="bg-[#0a0b0d] text-white">
     <div id="root">
       <div id="initial-loader" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0b0d;">
         <div style="text-align:center;">
           <div style="width:36px;height:36px;border:3px solid #1f2937;border-top-color:#1877F2;border-radius:50%;animation:lspin 0.8s linear infinite;margin:0 auto 12px;"></div>
-          <p style="font-size:15px;font-weight:600;color:#1877F2;margin:0;">engineersTech</p>
+          <p id="loader-text" style="font-size:15px;font-weight:600;color:#1877F2;margin:0;">Loading...</p>
         </div>
       </div>
       <style>@keyframes lspin{to{transform:rotate(360deg)}}</style>
     </div>
+    <script>
+      // Failsafe: if app doesn't mount within 12s, show retry
+      setTimeout(function(){
+        var el=document.getElementById('initial-loader');
+        if(el){
+          var t=document.getElementById('loader-text');
+          if(t){t.innerHTML='Still loading… <a href="javascript:location.reload()" style="color:#60a5fa;text-decoration:underline;margin-left:4px;">Retry</a>';}
+        }
+      },12000);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
