@@ -16,6 +16,7 @@ import {
   Play,
   BarChart3,
   Layers,
+  ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +27,7 @@ import engineersLogo from "@/assets/engineersTech-logo-white.svg";
 const sidebarLinks = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/services", icon: Layers, label: "Services" },
+  { href: "/admin/client-logos", icon: ImageIcon, label: "Client Logos" },
   { href: "/admin/blog", icon: FileText, label: "Blog Posts" },
   { href: "/admin/portfolio", icon: Briefcase, label: "Case Studies" },
   { href: "/admin/demo", icon: Play, label: "Project Showcase" },
