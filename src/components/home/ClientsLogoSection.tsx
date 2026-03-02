@@ -1,6 +1,14 @@
+import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/animations";
+import { supabase } from "@/integrations/supabase/client";
 
-const clients = [
+interface LogoItem {
+  name: string;
+  initials: string;
+  logo_url?: string | null;
+}
+
+const fallbackClients: LogoItem[] = [
   { name: "TechCorp", initials: "TC" },
   { name: "FinanceHub", initials: "FH" },
   { name: "CloudNine", initials: "C9" },
@@ -15,11 +23,19 @@ const clients = [
   { name: "ByteWise", initials: "BW" },
 ];
 
-function ClientLogo({ name, initials }: { name: string; initials: string }) {
+function getInitials(name: string) {
+  return name.split(/\s+/).map(w => w[0]).join("").toUpperCase().slice(0, 2);
+}
+
+function ClientLogo({ name, initials, logo_url }: LogoItem) {
   return (
     <div className="flex items-center gap-3 px-8 shrink-0 select-none">
-      <div className="w-10 h-10 rounded-xl bg-secondary/80 border border-border/50 flex items-center justify-center">
-        <span className="text-sm font-bold text-primary">{initials}</span>
+      <div className="w-10 h-10 rounded-xl bg-secondary/80 border border-border/50 flex items-center justify-center overflow-hidden">
+        {logo_url ? (
+          <img src={logo_url} alt={name} className="w-full h-full object-contain p-0.5" />
+        ) : (
+          <span className="text-sm font-bold text-primary">{initials}</span>
+        )}
       </div>
       <span className="text-muted-foreground/60 font-medium text-sm whitespace-nowrap tracking-wide">
         {name}
@@ -29,7 +45,25 @@ function ClientLogo({ name, initials }: { name: string; initials: string }) {
 }
 
 export function ClientsLogoSection() {
-  // Duplicate array for seamless infinite scroll
+  const [clients, setClients] = useState<LogoItem[]>(fallbackClients);
+
+  useEffect(() => {
+    supabase
+      .from("client_logos")
+      .select("name, logo_url")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setClients(data.map(d => ({
+            name: d.name,
+            initials: getInitials(d.name),
+            logo_url: d.logo_url,
+          })));
+        }
+      });
+  }, []);
+
   const logos = [...clients, ...clients];
 
   return (
@@ -42,13 +76,10 @@ export function ClientsLogoSection() {
         </p>
       </ScrollReveal>
 
-      {/* Marquee container */}
       <div className="relative z-10">
-        {/* Fade edges */}
         <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
-        {/* Scrolling track */}
         <div className="flex animate-marquee" aria-hidden="false">
           {logos.map((client, i) => (
             <ClientLogo key={`${client.name}-${i}`} {...client} />

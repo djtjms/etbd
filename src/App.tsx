@@ -49,6 +49,7 @@ import ChatbotConfig from "./pages/admin/ChatbotConfig";
 import BrandingSettings from "./pages/admin/BrandingSettings";
 import AdminSettings from "./pages/admin/Settings";
 import ServicesManagement from "./pages/admin/ServicesManagement";
+import ClientLogosManagement from "./pages/admin/ClientLogosManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -102,6 +103,7 @@ function AnimatedRoutes() {
         <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
         <Route path="/admin/consultations" element={<ProtectedRoute><ConsultationManagement /></ProtectedRoute>} />
         <Route path="/admin/services" element={<ProtectedRoute><ServicesManagement /></ProtectedRoute>} />
+        <Route path="/admin/client-logos" element={<ProtectedRoute><ClientLogosManagement /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
         
         <Route path="*" element={<NotFound />} />
